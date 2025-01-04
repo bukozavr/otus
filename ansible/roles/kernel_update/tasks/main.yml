@@ -3,12 +3,13 @@
 
   - name: Print kernel version
     ansible.builtin.debug:
-      msg: Kernel version {{ ansible_kernel }} 
+      msg: Kernel version {{ ansible_kernel }}
 
   - name: Add specified repository into sources list
     ansible.builtin.apt_repository:
       validate_certs: no
-      repo: deb hppa:cappelikan/ppa
+      repo: ppa:cappelikan/ppa
+      codename: jammy
       state: present
 
   - name: update cache
@@ -16,10 +17,8 @@
       update_cache: yes
       name: mainline
 
-  - name: Print kernel version
-    ansible.builtin.debug:
-      msg: Kernel version {{ ansible_kernel }} 
-
+  - name: install kernel
+    ansible.builtin.command: mainline --install-latest
 
   - name: Reboot a slow machine that might have lots of updates to apply
     ansible.builtin.reboot:
@@ -31,9 +30,4 @@
 
   - name: Print kernel version
     ansible.builtin.debug:
-      msg: Kernel version {{ ansible_kernel }} 
-
-#  - name: install update
-#    ansible.builtin.apt:
-#      upgrade: yes
-
+      msg: Kernel version {{ ansible_kernel }}
