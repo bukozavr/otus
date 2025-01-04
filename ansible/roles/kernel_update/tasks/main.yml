@@ -1,0 +1,10 @@
+---
+# tasks file for kernel_update
+  - name: update cache
+    ansible.builtin.apt:
+      update_cache: yes
+
+  - name: install update
+    ansible.builtin.apt:
+      upgrade: yes
+
