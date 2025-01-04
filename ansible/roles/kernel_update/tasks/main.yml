@@ -1,10 +1,39 @@
 ---
 # tasks file for kernel_update
+
+  - name: Print kernel version
+    ansible.builtin.debug:
+      msg: Kernel version {{ ansible_kernel }} 
+
+  - name: Add specified repository into sources list
+    ansible.builtin.apt_repository:
+      validate_certs: no
+      repo: deb hppa:cappelikan/ppa
+      state: present
+
   - name: update cache
     ansible.builtin.apt:
       update_cache: yes
+      name: mainline
 
-  - name: install update
-    ansible.builtin.apt:
-      upgrade: yes
+  - name: Print kernel version
+    ansible.builtin.debug:
+      msg: Kernel version {{ ansible_kernel }} 
+
+
+  - name: Reboot a slow machine that might have lots of updates to apply
+    ansible.builtin.reboot:
+      reboot_timeout: 3600
+
+
+  - name: Re-read facts after adding custom fact
+    ansible.builtin.setup:
+
+  - name: Print kernel version
+    ansible.builtin.debug:
+      msg: Kernel version {{ ansible_kernel }} 
+
+#  - name: install update
+#    ansible.builtin.apt:
+#      upgrade: yes
 
