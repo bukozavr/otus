@@ -1,4 +1,4 @@
-Role Name: kernel_update
+# Role Name: kernel_update
 
 =========
 Роль для обновления ядра ОС с помощью mainline из репозитория ppa:cappelikan/ppa. 
@@ -23,9 +23,12 @@ Role Variables
 --------------
 Для запуска роли не используются дополнительные переменные.
 В глобальном файле ansible.cfg отключена проверка ключей хостов и несоответствие версий интерпретатора python
+
+````
 [defaults]
 host_key_checking = False
 interpreter_python=auto_silent
+````
 
 Dependencies
 ------------
@@ -36,11 +39,12 @@ Example Playbook
 ----------------
 Пример вызова роли в плейбуке. Поскольку для выполнения задач в роли требуются повышенные привилегии, то в плейбуке требуется установить режим become
 
+````
 - hosts: all
   roles:
     - role: kernel_update
       become: true
-
+````
 
 License
 -------
