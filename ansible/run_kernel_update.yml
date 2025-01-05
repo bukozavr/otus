@@ -1,5 +1,5 @@
 ---
-- hosts: s231.test.local
+- hosts: all
   roles:
     - role: kernel_update
       become: true

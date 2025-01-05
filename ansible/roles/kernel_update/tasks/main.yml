@@ -9,25 +9,51 @@
     ansible.builtin.apt_repository:
       validate_certs: no
       repo: ppa:cappelikan/ppa
-      codename: jammy
+      codename: "{{ ansible_distribution_release }}"
       state: present
 
   - name: update cache
     ansible.builtin.apt:
       update_cache: yes
       name: mainline
+      state: present
 
-  - name: install kernel
-    ansible.builtin.command: mainline --install-latest
+  - name: install pkexec on 24.04 LTS
+    ansible.builtin.apt:
+      name: pkexec
+      state: present
+    when: ansible_facts['distribution_release'] == "noble"
 
-  - name: Reboot a slow machine that might have lots of updates to apply
-    ansible.builtin.reboot:
-      reboot_timeout: 3600
+  - name: check if kernel update exist
+    ansible.builtin.command: mainline check
+    register: mainline_exitcode
+
+  - name: print debug
+    debug:
+      msg: "New kernel exist"
+    when: mainline_exitcode.stdout.find('No updates found') == -1
+
+    
+  - name: install new kernel
+    when: mainline_exitcode.stdout.find('No updates found') == -1
+    block:
+  
+      - name: install kernel
+        ansible.builtin.command: mainline install-latest
+        register: update_exitcode
+
+#      - name: print debug error
+#        debug:
+#          var: update_exitcode.output.stderr
+
+      - name: Reboot a slow machine that might have lots of updates to apply
+        ansible.builtin.reboot:
+          reboot_timeout: 3600
 
 
-  - name: Re-read facts after adding custom fact
-    ansible.builtin.setup:
+      - name: Re-read facts after adding custom fact
+        ansible.builtin.setup:
 
-  - name: Print kernel version
-    ansible.builtin.debug:
-      msg: Kernel version {{ ansible_kernel }}
+      - name: Print kernel version
+        ansible.builtin.debug:
+          msg: Kernel version {{ ansible_kernel }}

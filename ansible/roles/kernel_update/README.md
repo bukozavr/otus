@@ -1,17 +1,31 @@
-Role Name
-=========
+Role Name: kernel_update
 
-A brief description of the role goes here.
+=========
+Роль для обновления ядра ОС с помощью mainline из репозитория ppa:cappelikan/ppa. 
+Неофициальный метод! Используются неподписанные ядра! Применять только в учебных и тестовых целях!
+https://learnubuntu.com/upgrade-kernel/
+
+При запуске роли устанавливаются требуемые дополнительные репозитории, компоненты. 
+Выполняется обновление ядра на самую свежую версию. Выполняется перезагрузка хоста.
+В конце выводится информация о версии загруженного ядра
+
+Если версия ядра уже самая новая, то никаких изменений в системе не выполняется.
 
 Requirements
 ------------
+Протестировано на ОС Ubuntu 22.04 LTS, 24.04 LTS
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Для успешного запуска роли требуется настроить следующее:
+- подключение к целевым хостам с помощью ssh ключей
+- отключить запрос пароля для повышения привилегий root. 
 
 Role Variables
 --------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Для запуска роли не используются дополнительные переменные.
+В глобальном файле ansible.cfg отключена проверка ключей хостов и несоответствие версий интерпретатора python
+[defaults]
+host_key_checking = False
+interpreter_python=auto_silent
 
 Dependencies
 ------------
@@ -20,19 +34,21 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 
 Example Playbook
 ----------------
+Пример вызова роли в плейбуке. Поскольку для выполнения задач в роли требуются повышенные привилегии, то в плейбуке требуется установить режим become
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+- hosts: all
+  roles:
+    - role: kernel_update
+      become: true
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
 
 License
 -------
 
-BSD
+Education
 
 Author Information
 ------------------
+Roman Kluev
+bukozavr@gmail.com
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
