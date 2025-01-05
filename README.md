@@ -1,15 +1,10 @@
-Home 1
-Kernel update
+OTUS Linux Administrator Pro
+Клюев Роман (Kluev Roman)
 
-sudo add-apt-repository ppa:cappelikan/ppa
-sudo apt update
-sudo apt install mainline
+ДЗ 1. Обновление ядра
 
-mainline –check
-sudo mainline --install-latest
-
-reboot
-
-Посмотреть список ядер, установленных в системе
-apt list --installed | grep linux-image
+Vagrant - пропущено. Недоступен официально с территории РФ в связи с этим невозможно использование в продуктивной среде предприятия
+Kernel update - написана роль Ansible для обновления ядра для ОС Ubuntu 22.04, 24,04
+  https://github.com/bukozavr/otus/blob/master/ansible/run_kernel_update.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/kernel_update
 

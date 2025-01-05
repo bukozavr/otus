@@ -1,0 +1,4 @@
+[ubuntu]
+s231.test.local  ansible_user=user
+s232.test.local  ansible_user=user
+s233.test.local  ansible_user=user
