@@ -3,7 +3,7 @@
 
   - name: Print kernel version
     ansible.builtin.debug:
-      msg: Kernel version {{ ansible_kernel }}
+      msg: Kernel version {{ ansible_kernel }}. OS {{ ansible_lsb.description }}. Host {{ ansible_nodename }}
 
   - name: Add specified repository into sources list
     ansible.builtin.apt_repository:
@@ -56,4 +56,4 @@
 
       - name: Print kernel version
         ansible.builtin.debug:
-          msg: Kernel version {{ ansible_kernel }}
+          msg: Kernel version {{ ansible_kernel }}. OS {{ ansible_lsb.description }}. Host {{ ansible_nodename }}
