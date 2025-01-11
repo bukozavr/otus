@@ -1,0 +1,7 @@
+---
+# vars file for nginx_install
+nginx_port: 8080
+server_name: localhost
+document_root: /usr/share/nginx/html
+# document_root: /var/www/html
+# index_files: ["index.html", "index.htm"]

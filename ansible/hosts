@@ -1,4 +1,13 @@
 [ubuntu]
-s231.test.local  ansible_user=user
-s232.test.local  ansible_user=user
-s233.test.local  ansible_user=user
+s231.test.local
+s233.test.local
+
+[ubuntu-2204]
+s231.test.local
+
+[ubuntu-2404]
+s233.test.local
+
+[astra]
+s232.test.local
+

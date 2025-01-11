@@ -1,0 +1,18 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen       {{ nginx_port }};
+        server_name  {{ server_name }};
+        root         {{ document_root }};
+
+        location / {
+           add_header Server-Name $hostname;
+           add_header Server-IP $server_addr;
+           add_header Client-IP $remote_addr;
+           index index.htm;
+        }
+    }
+}

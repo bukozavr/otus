@@ -1,0 +1,32 @@
+---
+# tasks file for nginx_install
+- name: Ensure Nginx is installed
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+  notify: restart nginx
+
+- name: Ensure Nginx is enabled and running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+  notify: restart nginx
+
+- name: Deploy Nginx configuration from template
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: reload nginx
+
+- name: Ensure the Nginx configuration file is valid
+  command: nginx -t
+  register: nginx_test
+  failed_when: nginx_test.rc != 0
+
+- name: copy example index.htm to nginx host
+  copy:
+    src: index.htm
+    dest: "{{ document_root }}/index.htm"
+  
