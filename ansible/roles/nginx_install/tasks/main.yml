@@ -25,8 +25,8 @@
   register: nginx_test
   failed_when: nginx_test.rc != 0
 
-- name: copy example index.htm to nginx host
+- name: copy example test.html to nginx host
   copy:
-    src: index.htm
-    dest: "{{ document_root }}/index.htm"
+    src: test.html
+    dest: "{{ document_root }}/test.html"
   

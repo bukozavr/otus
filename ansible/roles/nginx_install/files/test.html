@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .info {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Test Server</h1>
+    <div class="info">
+        <strong>Server Name:</strong> <span id="server-name">Loading...</span>
+    </div>
+    <div class="info">
+        <strong>Server IP:</strong> <span id="server-ip">Loading...</span>
+    </div>
+    <div class="info">
+        <strong>Client IP:</strong> <span id="client-ip">Loading...</span>
+    </div>
+
+    <script>
+        // Чтение заголовков с помощью Fetch API
+        fetch(window.location.href).then(response => {
+            const serverName = response.headers.get('Server-Name');
+            const serverIP = response.headers.get('Server-IP');
+            const clientIP = response.headers.get('Client-IP');
+
+            document.getElementById('server-name').textContent = serverName || 'Unavailable';
+            document.getElementById('server-ip').textContent = serverIP || 'Unavailable';
+            document.getElementById('client-ip').textContent = clientIP || 'Unavailable';
+        }).catch(error => {
+            console.error('Error fetching server data:', error);
+        });
+    </script>
+</body>
+</html>
