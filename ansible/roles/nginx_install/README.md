@@ -1,38 +1,57 @@
-Role Name
+# Role Name: NGINX install
 =========
+Роль для установки web сервера NGINX.
 
-A brief description of the role goes here.
+При запуске роли устанавливаются компоненты NGINX, настраивается автозапуск сервиса, формируется на основе шаблона jinja2 и переменных файл конфигурации nginx.conf, который коируется на удаленный хост.
+Также формируется из шаблона и копируется на сервер файл index.html, который отображает версию ОС (из фактов ansible), ip адрес сервера и клиента.
+
+После работы плейбука для проверки работы сервиса открыть в браузере страницы
+http://hostname:8080
+В данном примере 8080 - номер порта, заданный в переменных в конфигурации роли. 
 
 Requirements
 ------------
+Протестировано на ОС Ubuntu 22.04 LTS, 24.04 LTS, Astra linux 1.7
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Для успешного запуска роли требуется настроить следующее:
+- подключение к целевым хостам с помощью ssh ключей
+- отключить запрос пароля для повышения привилегий root.
+- в Astra linux требуется подключить расширенный extended репозиторий
 
 Role Variables
 --------------
+В разделе с переменными задатся номер порта для работы сервиса, имя сервера, путь к корневому разделу с документами.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+В глобальном файле ansible.cfg отключена проверка ключей хостов и несоответствие версий интерпретатора python
 
-Dependencies
+````
+[defaults]
+host_key_checking = False
+interpreter_python=auto_silent
+nsible_remote_user = user
+````
+
+Role Handlers
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Используются обработчики событий, которые выполняют рестарт сервиса или перезагрузку конфигурации NGINX
 
 Example Playbook
 ----------------
+Пример вызова роли в плейбуке. Поскольку для выполнения задач в роли требуются повышенные привилегии, то в плейбуке требуется установить режим become
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+````
+- hosts: all
+  roles:
+    - role: nginx_install
+      become: true
+````
 
 License
 -------
 
-BSD
+Education
 
 Author Information
 ------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Roman Kluev
+bukozavr@gmail.com

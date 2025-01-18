@@ -1,12 +1,12 @@
 ---
 # handlers file for nginx_install
-- name: restart nginx
+- name: restart_nginx
   systemd:
     name: nginx
     state: restarted
     enabled: yes
 
-- name: reload nginx
+- name: reload_nginx
   systemd:
     name: nginx
     state: reloaded

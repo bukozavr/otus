@@ -5,28 +5,44 @@
     name: nginx
     state: latest
     update_cache: yes
-  notify: restart nginx
+  notify: restart_nginx
 
 - name: Ensure Nginx is enabled and running
   service:
     name: nginx
     state: started
     enabled: yes
-  notify: restart nginx
+  notify: restart_nginx
 
 - name: Deploy Nginx configuration from template
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-  notify: reload nginx
+  notify: reload_nginx
 
 - name: Ensure the Nginx configuration file is valid
   command: nginx -t
   register: nginx_test
   failed_when: nginx_test.rc != 0
 
-- name: copy example test.html to nginx host
-  copy:
-    src: test.html
-    dest: "{{ document_root }}/test.html"
-  
+- name: copy example index.html to nginx host
+  template:
+    src: index.html.j2
+    dest: "{{ document_root }}/index.html"
+
+# reset all handlers. This part runs after handlers
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: check web server
+  ansible.builtin.uri:
+    url: http://{{ ansible_host }}:{{ nginx_port }}/
+    method: GET
+    validate_certs: False
+    status_code: 200
+  register: result
+
+- name: Print check result
+  ansible.builtin.debug:
+    msg: "Check url: {{ result.url }}. Result: {{ result.status }}"
+

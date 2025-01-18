@@ -1,0 +1,3 @@
+---
+# vars file for prepare_server
+entries_file: "{{ role_path }}/files/hosts.lab"
