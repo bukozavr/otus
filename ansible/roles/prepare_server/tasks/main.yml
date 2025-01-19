@@ -2,15 +2,25 @@
 # edit /etc/hosts
 
 - name: Read entries from file                                         
-  set_fact:                                                            
+  ansible.builtin.set_fact:                                                            
     entries_content: "{{ lookup('file', entries_file) | split('\n') }}"
                                                                        
 - name: Add each entry to /etc/hosts                                   
-  lineinfile:                                                          
+  ansible.builtin.lineinfile:                                                          
     path: /etc/hosts                                                   
     line: "{{ item }}"                                                 
     state: present                                                     
   loop: "{{ entries_content }}"                                        
                                     
-
 # edit /etc/hosts end
+
+- name: update cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install mc
+  ansible.builtin.apt:
+    name: mc
+    state: present
+

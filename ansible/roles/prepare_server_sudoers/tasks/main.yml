@@ -1,0 +1,48 @@
+---
+# tasks file for prepare_server_sudoers
+- name: Uncomment includedir directive in /etc/sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^#\s*@includedir /etc/sudoers.d'
+    line: '@includedir /etc/sudoers.d'
+    state: present
+    validate: 'visudo -cf %s'
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Uncomment includedir directive in /etc/sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^#\s+includedir /etc/sudoers.d'
+    line: '#includedir /etc/sudoers.d'
+    state: present
+    validate: 'visudo -cf %s'
+  when: ansible_facts['distribution'] == "Astra Linux"
+
+- name: Delete from sudoers file info about admin user
+  ansible.builtin.lineinfile:                                                
+    path: /etc/sudoers                                       
+    state: absent                                           
+    regexp: '^{{ admin_user }} ALL=\(ALL\) NOPASSWD:\s*ALL$'               
+    line: '{{ admin_user }} ALL=\(ALL\) NOPASSWD:\s*ALL'                     
+    validate: 'visudo -cf %s'                                
+
+- name: Validate sudoers file
+  ansible.builtin.command: visudo -cf /etc/sudoers
+  register: visudo_check
+  failed_when: visudo_check.rc != 0
+  changed_when: false
+
+- name: Ensure the admin user has passwordless sudo
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/{{ admin_user }}
+    content: "{{ admin_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+
+- name: Validate sudoers file
+  ansible.builtin.command: visudo -cf /etc/sudoers.d/{{ admin_user }}
+  register: visudo_check
+  failed_when: visudo_check.rc != 0
+  changed_when: false
+

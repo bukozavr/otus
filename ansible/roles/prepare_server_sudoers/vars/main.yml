@@ -1,0 +1,3 @@
+---
+# vars file for prepare_server_sudoers
+admin_user: user

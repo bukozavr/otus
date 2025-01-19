@@ -2,4 +2,6 @@
 - hosts: all
   roles:
     - role: prepare_server
-      become: true
+    - role: prepare_server_sudoers
+
+  become: true
