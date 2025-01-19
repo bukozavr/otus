@@ -6,9 +6,12 @@
 
 Для тестирования плейбуков Ansible развернуто несколько ВМ с ОС Ubuntu 22.04, Ubuntu 24.04, AstraLinux 1.7.
 Команды запуска плейбуков:
+
+```
 ansible-playbook playbook.yml -i inventory -l ubuntu
 ansible-playbook playbook.yml -i inventory -l astra
 ansible-playbook playbook.yml -i inventory -l all
+```
 
 ## ДЗ 1. Обновление ядра
 
