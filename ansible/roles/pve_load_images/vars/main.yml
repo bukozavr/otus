@@ -1,0 +1,14 @@
+---
+# vars file for pve_load_images
+img_dir: "/srv/images"
+
+cloud_init_images:
+ - link: https://cloud-images.ubuntu.com/noble/current/
+   img: noble-server-cloudimg-amd64.img
+   img_alias: noble
+ - link: https://cloud-images.ubuntu.com/jammy/current/
+   img: jammy-server-cloudimg-amd64.img
+   img_alias: jammy
+ - link: https://registry.astralinux.ru/artifactory/mg-generic/alse/cloudinit/
+   img: alse-1.7.6-max-cloudinit-mg15.0.1-amd64.qcow2
+   img_alias: astra

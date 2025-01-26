@@ -1,0 +1,20 @@
+---
+# tasks file for pve_load_images
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "{{ img_dir }}"
+    state: directory
+
+- name: Download standard images
+  ansible.builtin.get_url:
+    url:  "{{ item.link }}/{{ item.img }}"
+    dest: "{{ img_dir }}/{{ item.img }}"
+  loop: "{{ cloud_init_images }}"
+
+- name: Create symbolic link
+  file:
+    src: "{{ img_dir }}/{{ item.img }}"
+    dest: "{{ img_dir }}/{{ item.img_alias }}"
+    state: link
+  loop: "{{ cloud_init_images }}"

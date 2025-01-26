@@ -1,0 +1,61 @@
+---
+- name: work on proxmox - update images
+  hosts: proxmox_root
+  gather_facts: 0
+  roles:
+    - role: pve_load_images
+      hosts: proxmox_root
+      tags: [never, init]
+
+- name: work on proxmox - create vm s231 noble
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 231
+    img_alias: noble
+    add_disks: 2
+    add_disks_size: 2
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s232 astra
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 232
+    img_alias: astra
+    add_disks: 5
+    add_disks_size: 2
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s233 jammy
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 233
+    img_alias: jammy
+    add_disks: 4
+    add_disks_size: 2
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+
+- name: work on vm
+  hosts: srv
+  gather_facts: 0
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+#    - role: prepare_server_sudoers
+  tags: [never, init]
+
+
+

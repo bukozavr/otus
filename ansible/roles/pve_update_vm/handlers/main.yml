@@ -1,0 +1,6 @@
+---
+# handlers file for pve_update_vm
+# Reboot a slow machine that might have lots of updates to apply    
+- name: reboot vm
+  ansible.builtin.reboot:
+    reboot_timeout: 3600
