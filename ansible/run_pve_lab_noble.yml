@@ -7,12 +7,12 @@
       hosts: proxmox_root
       tags: [never, init]
 
-- name: work on proxmox - create vm s232 astra
+- name: work on proxmox - create vm s231 noble
   hosts: proxmox_root
   gather_facts: 0
   vars:
-    vm_last_octet: 232
-    img_alias: astra
+    vm_last_octet: 231
+    img_alias: noble
     add_disks: 8
     add_disks_size: 1
   roles:
@@ -21,8 +21,8 @@
       tags: [never, init, restore]
 
 - name: work on vm
-  hosts: astra
-  gather_facts: 0
+  hosts: noble
+  gather_facts: 1
   become: true
   roles:
     - role: pve_update_vm

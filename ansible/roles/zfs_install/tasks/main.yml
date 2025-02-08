@@ -1,0 +1,27 @@
+---
+
+- name: update cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install zfs
+  ansible.builtin.apt:
+    name: zfsutils-linux
+    state: present
+#  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Создать пустой файл для /etc/modprobe.d/zfs.conf
+  ansible.builtin.file:
+    path: /etc/modprobe.d/zfs.conf
+    state: touch
+
+- name: Добавить строку в /etc/modprobe.d/zfs.conf для автозагрузки модуля ZFS
+  ansible.builtin.lineinfile:
+    path: /etc/modprobe.d/zfs.conf
+    line: "options zfs zfs_load_extra=on"
+    create: yes
+  notify: reboot vm
+
+- name: Загрузить модуль ZFS при загрузке
+  ansible.builtin.command: modprobe zfs
