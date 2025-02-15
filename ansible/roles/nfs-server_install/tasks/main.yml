@@ -1,0 +1,24 @@
+---
+
+- name: update cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install nfs server
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+
+- name: Create a directory to root share
+  ansible.builtin.file:
+    path: "{{ nfs_root }}"
+    state: directory
+    mode: '777'
+
+- name: Modify ownership & permissions of the shared directory
+  ansible.builtin.file:
+    path: "{{ nfs_root }}"
+    owner: nobody
+    group: nogroup
+    mode: '777'

@@ -1,0 +1,14 @@
+---
+# handlers file for nfs-server_export
+
+
+- name: exportfs_nfs
+  ansible.builtin.command:
+    cmd: "exportfs -r"
+
+- name: restart_nfs
+  ansible.builtin.systemd:
+    name: nfs-kernel-server
+    state: restarted
+
+

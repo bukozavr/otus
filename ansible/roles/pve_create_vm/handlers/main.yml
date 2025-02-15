@@ -2,7 +2,7 @@
 # handlers file for pve_create_vm
 - name: wait_120
   wait_for:
-    delay: 120
+    delay: 150
     timeout: 0
 
 - name: wait_15

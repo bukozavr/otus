@@ -1,0 +1,5 @@
+---
+# defaults file for nfs-server_export
+nfs_root: "/srv/share-nfs"
+nfs_share: "share"
+nfs_client: "*"

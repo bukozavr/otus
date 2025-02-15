@@ -26,3 +26,17 @@ ansible-playbook playbook.yml -i inventory -l all
   https://github.com/bukozavr/otus/blob/master/ansible/run_nginx_install.yml
   https://github.com/bukozavr/otus/tree/master/ansible/roles/nginx_install
 
+## ДЗ 6. Работа с NFS
+
+- написаны роли Ansible для установки и настройки сервера и клиента NFS
+  * nfs-client_install - установка клиента
+  * nfs-client_mount - монтирование ресурса на клиенте
+  * nfs-server_export - экспортирование ресурса на сервере
+  * nfs-server_install - установка сервера
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_nfs.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_nfs.yml -i pve.ini --tags init --ask-become-pass
+```

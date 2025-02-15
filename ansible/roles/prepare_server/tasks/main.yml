@@ -24,11 +24,6 @@
     name: mc
     state: present
 
-- name: install mdadm
-  ansible.builtin.apt:
-    name: mdadm
-    state: present
-
 - name: install lshw
   ansible.builtin.apt:
     name: lshw

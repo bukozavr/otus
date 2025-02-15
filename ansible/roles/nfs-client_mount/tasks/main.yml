@@ -1,0 +1,10 @@
+---
+# tasks file for nfs-client_mount
+- name: Mount the directory NFS
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: '{{ nfs_server }}:{{ nfs_root }}/{{ nfs_share }} /mnt nfs vers=3,noauto,x-systemd.automount 0 0'
+    state: present
+  notify:
+  #  - exportfs_nfs
+    - restart_remote_fs

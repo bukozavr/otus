@@ -1,0 +1,24 @@
+---
+# tasks file for nfs-server_export
+- name: Create a directory to share
+  ansible.builtin.file:
+    path: "{{ nfs_root }}/{{ nfs_share }}"
+    state: directory
+    mode: '777'
+
+- name: Modify ownership & permissions of the shared directory
+  ansible.builtin.file:
+    path: "{{ nfs_root }}/{{ nfs_share }}"
+    owner: nobody
+    group: nogroup
+    mode: '777'
+
+- name: Add the directory to the NFS configuration file
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: '{{ nfs_root }} {{ nfs_client }}(rw,sync,root_squash)'
+    state: present
+  notify:
+    - exportfs_nfs
+    - restart_nfs
+

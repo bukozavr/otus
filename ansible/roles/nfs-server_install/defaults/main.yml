@@ -1,0 +1,3 @@
+---
+# defaults file for nfs-server_install
+nfs_root: "/srv/share-nfs"
