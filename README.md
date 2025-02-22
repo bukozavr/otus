@@ -37,6 +37,10 @@ ansible-playbook playbook.yml -i inventory -l all
   https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_nfs.yml
   https://github.com/bukozavr/otus/tree/master/ansible/roles/
 
+```
+ansible-playbook run_pve_lab_nfs.yml -i pve.ini --tags init --ask-become-pass
+```
+
 ## ДЗ 9. Инициализация системы. Systemd
 
 - написаны роли Ansible для установки и настройки сервисов
@@ -48,5 +52,5 @@ ansible-playbook playbook.yml -i inventory -l all
   https://github.com/bukozavr/otus/tree/master/ansible/roles/
 
 ```
-ansible-playbook run_pve_lab_nfs.yml -i pve.ini --tags init --ask-become-pass
+ansible-playbook run_systemd_astra.yml -i pve.ini
 ```
