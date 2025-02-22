@@ -1,0 +1,7 @@
+---
+# handlers file for systemd_spawn-fcgi
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: spawn-fcgi.service
+    state: restarted

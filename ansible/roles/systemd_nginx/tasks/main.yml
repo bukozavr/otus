@@ -1,0 +1,41 @@
+---
+# tasks file for systemd_nginx
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+
+- name: Create nginx@ service
+  ansible.builtin.copy:
+    src: nginx@.service
+    dest: "/etc/systemd/system/nginx@.service"
+
+- name: Deploy Nginx configuration from template
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/nginx-{{ item }}.conf"
+  loop: "{{ range(1, nginx_count + 1) | list }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Insert PID
+  ansible.builtin.lineinfile:
+    path: "/etc/nginx/nginx-{{ item }}.conf"
+    insertbefore: BOF
+    line: "pid /run/nginx-{{ item }}.pid;"
+    state: present
+  loop: "{{ range(1, nginx_count + 1) | list }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Replace nginx port
+  ansible.builtin.replace:
+    path: "/etc/nginx/nginx-{{ item }}.conf"
+    regexp: '8080'
+    replace: '{{ 8080+item }}'
+  loop: "{{ range(1, nginx_count + 1) | list }}"
+  loop_control:
+    label: "{{ item }}"
+
+

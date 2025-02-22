@@ -1,0 +1,47 @@
+---
+# tasks file for systemd_watchlog
+- name: copy watchlog script
+  ansible.builtin.copy:
+    src: watchlog.sh
+    dest: /opt/watchlog.sh
+    group: root
+    owner: root
+    mode: "u=rwx,g=rx,o=rx"
+
+
+- name: copy watchlog config
+  ansible.builtin.copy:
+    src: watchlog
+    dest: /etc/default/watchlog
+    group: root
+    owner: root
+
+- name: copy watchlog service
+  ansible.builtin.copy:
+    src: watchlog.service
+    dest: /etc/systemd/system/watchlog.service
+    group: root
+    owner: root
+  notify: restart_service
+
+- name: copy watchlog timer
+  ansible.builtin.copy:
+    src: watchlog.timer
+    dest: /etc/systemd/system/watchlog.timer
+    group: root
+    owner: root
+  notify: restart_timer
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: watchlog.service
+    state: started
+    enabled: yes
+  notify: restart_service
+
+- name: Ensure Timer is enabled and running
+  ansible.builtin.service:
+    name: watchlog.timer
+    state: started
+    enabled: yes
+  notify: restart_timer

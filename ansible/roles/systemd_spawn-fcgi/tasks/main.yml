@@ -1,0 +1,35 @@
+---
+# tasks file for systemd_spawn-fcgi
+- name: spawn-fcgi install
+  ansible.builtin.apt:
+    pkg:
+      - spawn-fcgi
+      - php
+      - php-cgi
+      - php-cli
+      - apache2
+      - libapache2-mod-fcgid
+    state: latest
+    update_cache: yes
+#  notify: restart_nginx
+
+
+- name: copy fcgi.conf
+  ansible.builtin.copy:
+    src: fcgi.conf
+    dest: /etc/spawn-fcgi/
+
+- name: copy spawn-fcgi.service
+  ansible.builtin.copy:
+    src: spawn-fcgi.service
+    dest: /etc/systemd/system/spawn-fcgi.service
+    group: root
+    owner: root
+  notify: restart_service
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: spawn-fcgi.service
+    state: started
+    enabled: yes
+  notify: restart_service

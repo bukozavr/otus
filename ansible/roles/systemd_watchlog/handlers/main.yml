@@ -1,0 +1,13 @@
+---
+# handlers file for systemd_watchlog
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: watchlog.service
+    state: restarted
+
+- name: restart_timer
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: watchlog.timer
+    state: restarted

@@ -1,0 +1,12 @@
+---
+
+- name: systemd_workhome
+  hosts: watchlog
+  gather_facts: 0
+  become: true
+  vars:
+    nginx_count: 4
+  roles:
+    - role: systemd_watchlog
+    - role: systemd_spawn-fcgi
+    - role: systemd_nginx

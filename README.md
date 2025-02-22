@@ -37,6 +37,16 @@ ansible-playbook playbook.yml -i inventory -l all
   https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_nfs.yml
   https://github.com/bukozavr/otus/tree/master/ansible/roles/
 
+## ДЗ 9. Инициализация системы. Systemd
+
+- написаны роли Ansible для установки и настройки сервисов
+  * systemd_watchlog - сервис с таймером
+  * systemd_spawn-fcgi - сервис из инит файла
+  * systemd_nginx - запуск нескольких nginx
+  
+  https://github.com/bukozavr/otus/blob/master/ansible/run_systemd_astra.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
 ```
 ansible-playbook run_pve_lab_nfs.yml -i pve.ini --tags init --ask-become-pass
 ```
