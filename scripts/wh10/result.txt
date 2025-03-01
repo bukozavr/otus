@@ -1,0 +1,19 @@
+Hello,
+Report from [14/Aug/2019:19:02:51+0300] to [14/Aug/2019:19:59:53+0300]
+
+ Top 3 IP addresses:
+87.250.233.68 4
+93.158.167.130 3
+188.166.2.191 3
+
+ Top 3 URL addresses:
+uct="-" 6
+"https://dbadmins.ru/wp-cron.php?doing_wp_cron=1565801969.5889279842376708984375" 1
+"https://dbadmins.ru/wp-cron.php?doing_wp_cron=1565799677.3172910213470458984375" 1
+
+ All server errors (if exist):
+
+ All response codes:
+200 20
+301 4
+404 3
