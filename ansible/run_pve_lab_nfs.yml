@@ -35,7 +35,7 @@
 
 - name: work on nfs server
   hosts: nfss
-  gather_facts: 0
+  gather_facts: 1
   become: true
   vars:
     nfs_root: "/srv/share"

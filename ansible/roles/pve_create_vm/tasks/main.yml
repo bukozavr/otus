@@ -22,6 +22,7 @@
         --memory 2048
         --net0 virtio,bridge=vmbr0
         --scsihw virtio-scsi-pci
+        --cpu host
         --cores 2
         --name "s{{ vm_last_octet }}"
       args:

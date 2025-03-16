@@ -22,7 +22,7 @@
 
 - name: work on vm
   hosts: astra
-  gather_facts: 0
+  gather_facts: 1
   become: true
   roles:
     - role: pve_update_vm

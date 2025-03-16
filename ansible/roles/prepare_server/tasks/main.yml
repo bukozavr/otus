@@ -18,29 +18,64 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: install mc
   ansible.builtin.apt:
     name: mc
     state: present
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: install lshw
   ansible.builtin.apt:
     name: lshw
     state: present
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: install parted
   ansible.builtin.apt:
     name: parted
     state: present
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: install ncdu
   ansible.builtin.apt:
     name: ncdu
     state: present
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: install wget
   ansible.builtin.apt:
     name: wget
     state: present
+  when: ansible_facts['os_family'] == "Debian"
 
+# RedHat
+- name: update cache
+  ansible.builtin.yum:
+    update_cache: yes
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install mc
+  ansible.builtin.yum:
+    name: mc
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install lshw
+  ansible.builtin.yum:
+    name: lshw
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install parted
+  ansible.builtin.yum:
+    name: parted
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install wget
+  ansible.builtin.yum:
+    name: wget
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"

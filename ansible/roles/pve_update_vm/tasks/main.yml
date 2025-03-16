@@ -1,15 +1,29 @@
 ---
 # tasks file for pve_update_vm
 
-- name: install qemu agent
+- name: install qemu agent debian
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 7200
     name: qemu-guest-agent
-    state: latest
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
   notify: reboot vm
 
-- name: install updates
+- name: install updates debian
   ansible.builtin.apt:
     upgrade: yes
+  when: ansible_facts['os_family'] == "Debian"
 
+- name: install qemu agent redhat
+  ansible.builtin.yum:
+    update_cache: yes
+    name: qemu-guest-agent
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+  notify: reboot vm
+
+- name: install updates redhat
+  ansible.builtin.yum:
+    update_only: true
+  when: ansible_facts['os_family'] == "RedHat"
