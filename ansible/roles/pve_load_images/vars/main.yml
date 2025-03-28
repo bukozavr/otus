@@ -12,7 +12,8 @@ cloud_init_images:
  - link: https://registry.astralinux.ru/artifactory/mg-generic/alse/cloudinit/
    img: alse-1.7.6-max-cloudinit-mg15.0.1-amd64.qcow2
    img_alias: astra
- - link: https://mirror.yandex.ru/almalinux/9.4/cloud/x86_64/images/
+ - link: https://raw.repo.almalinux.org/vault/9.4/cloud/x86_64/images/
+# - link: https://mirror.yandex.ru/almalinux/9.4/cloud/x86_64/images/
 #   img: AlmaLinux-9-GenericCloud-latest.x86_64.qcow2
    img: AlmaLinux-9-GenericCloud-9.4-20240805.x86_64.qcow2
    img_alias: alma

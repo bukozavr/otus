@@ -1,0 +1,9 @@
+---
+- name: create_docker
+  hosts: docker
+  become: true  # sudo privileges
+  gather_facts: 1
+  roles:
+    - role: docker_install
+  tags: [never, init]
+

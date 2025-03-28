@@ -1,0 +1,44 @@
+---
+- name: work on proxmox - update images
+  hosts: proxmox_root
+  gather_facts: 0
+  roles:
+    - role: pve_load_images
+      hosts: proxmox_root
+      tags: [never, init]
+
+- name: work on proxmox - create vm s210 alma
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 210
+    img_alias: alma
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s215 alma
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 215
+    img_alias: alma
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on vm
+  hosts: alma
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+  tags: [never, init]
+
