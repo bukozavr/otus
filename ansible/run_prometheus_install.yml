@@ -1,0 +1,8 @@
+---
+- name: prometheus install
+  hosts: wh14_prometheus
+  become: true  # sudo privileges
+  gather_facts: 1
+  roles:
+    - role: prometheus_install
+

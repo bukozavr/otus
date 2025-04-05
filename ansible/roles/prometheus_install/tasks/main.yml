@@ -1,0 +1,104 @@
+---
+# tasks file for prometheus_install
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "{{ img_dir }}"
+    state: directory
+
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "{{ img_dir }}"
+    remote_src: yes
+
+- name: Ensure group "prometheus" exists
+  ansible.builtin.group:
+    name: prometheus
+    state: present
+
+- name: Add the user 'prometheus', appending the group 'prometheus' to the user's groups
+  ansible.builtin.user:
+    name: prometheus
+    shell: /sbin/nologin
+    create_home: false
+    groups: prometheus
+    system: true
+    append: yes
+    state: present
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "/etc/prometheus"
+    owner: prometheus
+    group: prometheus
+    state: directory
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "/var/lib/prometheus"
+    owner: prometheus
+    group: prometheus
+    state: directory
+
+- name: Copy file prometheus with owner and permission
+  ansible.builtin.copy:
+    src: "{{ img_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
+    dest: /usr/local/bin/
+    owner: prometheus
+    group: prometheus
+    mode: u=rwx,g=rx,o=rx
+    remote_src: true
+
+- name: Copy file promtool with owner and permission
+  ansible.builtin.copy:
+    src: "{{ img_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/promtool"
+    dest: /usr/local/bin/
+    owner: prometheus
+    group: prometheus
+    mode: u=rwx,g=rx,o=rx
+    remote_src: true
+
+- name: Copy dir console with owner and permission
+  ansible.builtin.copy:
+    src: "{{ img_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/consoles"
+    dest: /etc/prometheus/
+    owner: prometheus
+    group: prometheus
+    mode: u=rwx,g=rx,o=rx
+    remote_src: true
+
+- name: Copy dir console_libraies with owner and permission
+  ansible.builtin.copy:
+    src: "{{ img_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/console_libraries"
+    dest: /etc/prometheus/
+    owner: prometheus
+    group: prometheus
+    mode: u=rwx,g=rx,o=rx
+    remote_src: true
+
+- name: Copy file config
+  ansible.builtin.copy:
+    src: prometheus.yml
+    dest: /etc/prometheus/
+    owner: prometheus
+    group: prometheus
+#    mode: u=rwx,g=rx,o=rx
+    remote_src: false
+
+
+- name: copy prometheus service
+  ansible.builtin.copy:
+    src: prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    group: prometheus
+    owner: prometheus
+  notify: restart_service
+
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: prometheus.service
+    state: started
+    enabled: yes
+  notify: restart_service

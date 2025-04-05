@@ -1,0 +1,53 @@
+---
+# tasks file for prometheus-exporter_install
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "{{ img_dir }}"
+    state: directory
+
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/node_exporter/releases/download/v{{ prometheus_version }}/node_exporter-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "{{ img_dir }}"
+    remote_src: yes
+
+- name: Ensure group "nodeusr" exists
+  ansible.builtin.group:
+    name: nodeusr
+    state: present
+
+- name: Add the user 'nodeusr', appending the group 'nodeusr' to the user's groups
+  ansible.builtin.user:
+    name: nodeusr
+    shell: /sbin/nologin
+    create_home: false
+    groups: nodeusr
+    system: true
+    append: yes
+    state: present
+
+- name: Copy file prometheus exporter with owner and permission
+  ansible.builtin.copy:
+    src: "{{ img_dir }}/node_exporter-{{ prometheus_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/
+#    owner: prometheus
+#    group: prometheus
+    mode: u=rwx,g=rx,o=rx
+    remote_src: true
+
+- name: copy node_exporter exporter service
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+ #   group: prometheus
+ #   owner: prometheus
+  notify: restart_service
+
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: node_exporter.service
+    state: started
+    enabled: yes
+  notify: restart_service

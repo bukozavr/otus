@@ -1,0 +1,46 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s232 astra
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 232
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s233 astra
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 233
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on vm
+  hosts: wh14_astra
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+#    - role: zfs_install
+#    - role: prepare_server_sudoers
+  tags: [never, init]
+

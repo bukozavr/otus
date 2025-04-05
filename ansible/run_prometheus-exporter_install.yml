@@ -1,0 +1,8 @@
+---
+- name: prometheus node exporter install
+  hosts: wh14_astra
+  become: true  # sudo privileges
+  gather_facts: 1
+  roles:
+    - role: prometheus-exporter_install
+

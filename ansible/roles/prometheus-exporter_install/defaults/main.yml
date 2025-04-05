@@ -1,0 +1,4 @@
+---
+# defaults file for prometheus-exporter_install
+prometheus_version: 1.9.0
+img_dir: "/tmp/prometheus-exporter"

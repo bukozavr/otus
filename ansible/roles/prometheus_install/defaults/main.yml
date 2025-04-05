@@ -1,0 +1,4 @@
+---
+# defaults file for prometheus_install
+prometheus_version: 2.53.4
+img_dir: "/tmp/prometheus"
