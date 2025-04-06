@@ -1,0 +1,34 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s235 noble
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 235
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+
+- name: work on vm
+  hosts: wh15_ubuntu
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+#    - role: zfs_install
+#    - role: prepare_server_sudoers
+  tags: [never, init]
+
