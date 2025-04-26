@@ -54,3 +54,18 @@ ansible-playbook run_pve_lab_nfs.yml -i pve.ini --tags init --ask-become-pass
 ```
 ansible-playbook run_systemd_astra.yml -i pve.ini
 ```
+
+## ДЗ 16. сбор логов. rsyslog
+
+- написаны роли Ansible для установки и настройки сервисов
+  * auditd_install, rsyslog_install – установка служб
+  * rsyslog_config_server – настройка параметров rsyslog на log сервере
+  * rsyslog_config_client – настройка параметров rsyslog на web сервере
+
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh16_ubuntu.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh16_ubuntu.yml -i pve.ini --tags init --ask-become-pas
+```
