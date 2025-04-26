@@ -1,0 +1,4 @@
+-w /etc/nginx/nginx.conf -p w -k nginx_config_watch
+-w /etc/nginx/sites-enabled/ -p w -k nginx_config_watch
+-w /var/www/html/ -p w -k nginx_config_watch
+

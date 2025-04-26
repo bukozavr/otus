@@ -1,0 +1,24 @@
+---
+# tasks file for rsyslog_install
+
+- name: Gather facts about services
+  ansible.builtin.service_facts:
+
+- name: Ensure Service syslog-ng is disabled and stopped
+  ansible.builtin.service:
+    name: syslog-ng
+    state: stopped
+    enabled: no
+  when: ansible_facts['services']['syslog-ng.service']['status'] | default('not-found') != 'not-found'
+
+- name: Ensure rsyslog is installed
+  ansible.builtin.apt:
+    name: rsyslog
+    state: present
+    update_cache: yes
+
+- name: Ensure Service rsyslog is enabled and started
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: yes

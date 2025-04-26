@@ -1,0 +1,18 @@
+---
+# tasks file for rsyslog_config_server
+- name: rsyslog configuration on log server
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    line: '{{ item }}'
+    state: present
+  loop:
+    - 'module(load="imudp")'
+    - 'input(type="imudp" port="514")'
+    - 'module(load="imtcp")'
+    - 'input(type="imtcp" port="514")'
+    - '$template RemoteLogs,"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"'
+    - '*.* ?RemoteLogs'
+    - ':msg,contains,"nginx_config_watch" /var/log/rsyslog/nginx_conf_changed.log'
+    - '& ~'
+  notify:
+    - restart_rsyslog

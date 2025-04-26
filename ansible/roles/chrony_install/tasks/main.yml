@@ -1,0 +1,28 @@
+---
+# tasks file for chrony_install
+- name: Ensure chrony is installed
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+    update_cache: yes
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
+
+# RedHat
+- name: update cache
+  ansible.builtin.yum:
+    update_cache: yes
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install chrony
+  ansible.builtin.yum:
+    name: chrony
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+# All
+- name: Ensure Service is enabled and started
+  ansible.builtin.service:
+    name: chrony
+    state: started
+    enabled: yes
+

@@ -1,0 +1,31 @@
+---
+# tasks file for rsyslog_config_client
+
+- name: rsyslog configuration for nginx server
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    line: '{{ item }}'
+    state: present
+    insertafter: 'http {'
+  loop:
+    - 'error_log /var/log/nginx/my_crit.log crit;'
+    - 'error_log syslog:server=192.168.1.233:514,facility=local7,tag=nginx_error,severity=crit;'
+    - 'access_log syslog:server=192.168.1.233:514,facility=local7,tag=nginx_access,severity=info combined;'
+  notify:
+    - restart_nginx
+    - restart_rsyslog
+
+- name: Deploy rsyslog client configuration from template
+  ansible.builtin.template:
+    src: otus_rsyslog.conf.j2
+    dest: /etc/rsyslog.d/otus_rsyslog.conf
+  notify:
+    - restart_rsyslog
+
+- name: Copy file auditd rule
+  ansible.builtin.copy:
+    src: audit_nginx.rules
+    dest: /etc/audit/rules.d/audit_nginx.rules
+    remote_src: false
+  notify:
+    - restart_auditd

@@ -1,0 +1,15 @@
+# otus rsyslog logging
+*.crit        -/var/log/otus/crit.log
+*.crit        @@{{ rsyslog_server }}:514
+auth.*        @@{{ rsyslog_server }}:514
+authpriv.*    @@{{ rsyslog_server }}:514
+
+$ModLoad imfile
+$InputFileName /var/log/audit/audit.log
+$InputFileTag tag_audit_log:
+$InputFileStateFile audit_log
+$InputFileSeverity info
+$InputFileFacility local6
+$InputRunFileMonitor
+
+local6.* @@{{ rsyslog_server }}:514

@@ -1,0 +1,19 @@
+---
+# handlers file for rsyslog_config_client
+- name: restart_nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+- name: restart_rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+    enabled: yes
+
+- name: restart_auditd
+  systemd:
+    name: auditd
+    state: restarted
+    enabled: yes

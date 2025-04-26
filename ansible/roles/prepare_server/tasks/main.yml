@@ -1,54 +1,60 @@
 ---
 # edit /etc/hosts
 
-- name: Read entries from file                                         
-  ansible.builtin.set_fact:                                                            
+- name: Read entries from file
+  ansible.builtin.set_fact:
     entries_content: "{{ lookup('file', entries_file) | split('\n') }}"
-                                                                       
-- name: Add each entry to /etc/hosts                                   
-  ansible.builtin.lineinfile:                                                          
-    path: /etc/hosts                                                   
-    line: "{{ item }}"                                                 
-    state: present                                                     
-  loop: "{{ entries_content }}"                                        
-                                    
+
+- name: Add each entry to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+    state: present
+  loop: "{{ entries_content }}"
+
 # edit /etc/hosts end
 
 - name: update cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 - name: install mc
   ansible.builtin.apt:
     name: mc
     state: present
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 - name: install lshw
   ansible.builtin.apt:
     name: lshw
     state: present
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 - name: install parted
   ansible.builtin.apt:
     name: parted
     state: present
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 - name: install ncdu
   ansible.builtin.apt:
     name: ncdu
     state: present
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 - name: install wget
   ansible.builtin.apt:
     name: wget
     state: present
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
+
+#- name: install chrony
+#  ansible.builtin.apt:
+#    name: chrony
+#    state: present
+#  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
 # RedHat
 - name: update cache

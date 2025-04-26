@@ -1,0 +1,7 @@
+---
+# handlers file for rsyslog_config_server
+- name: restart_rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+    enabled: yes

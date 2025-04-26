@@ -1,0 +1,9 @@
+$ModLoad imfile
+$InputFileName /etc/nginx/nginx.conf, /etc/nginx/conf.d/*
+$InputFileTag tag_audit_log:
+$InputFileStateFile audit_log
+$InputFileSeverity info
+$InputFileFacility local6
+$InputRunFileMonitor
+
+*.*   @@{{ rsyslog_server }}:514

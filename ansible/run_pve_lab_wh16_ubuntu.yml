@@ -1,0 +1,59 @@
+---
+- name: work on proxmox - create vm s232 noble
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 232
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s233 noble
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 233
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on vm
+  hosts: wh16_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+  tags: [never, init]
+
+- name: rsyslog install
+  hosts: wh16_noble
+  become: true
+  roles:
+    - role: chrony_install
+    - role: rsyslog_install
+  tags: [never, init]
+
+- name: rsyslog config server log
+  hosts: wh16_log
+  become: true
+  roles:
+    - role: rsyslog_config_server
+  tags: [never, init]
+
+- name: rsyslog config server web
+  hosts: wh16_web
+  become: true
+  roles:
+    - role: nginx_install
+    - role: auditd_install
+    - role: rsyslog_config_client
+  tags: [never, init]

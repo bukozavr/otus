@@ -1,0 +1,6 @@
+---
+- hosts: all
+  roles:
+    - role: chrony_install
+    - role: rsyslog_install
+      become: true

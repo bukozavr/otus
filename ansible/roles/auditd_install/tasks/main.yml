@@ -1,0 +1,14 @@
+---
+# tasks file for auditd_install
+- name: Ensure auditd is installed
+  ansible.builtin.apt:
+    name: auditd
+    state: present
+    update_cache: yes
+
+- name: Ensure Service auditd is enabled and started
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: yes
+
