@@ -73,9 +73,6 @@ ansible-playbook run_pve_lab_wh16_ubuntu.yml -i pve.ini --tags init --ask-become
 ## ДЗ 17. Резервное копирование. BorgBackup
 
 - написаны роли Ansible для установки и настройки сервисов
-  * auditd_install, rsyslog_install – установка служб
-  * rsyslog_config_server – настройка параметров rsyslog на log сервере
-  * rsyslog_config_client – настройка параметров rsyslog на web сервере
   * borgbackup_install – установка borgbackup, без настроек
   * borgbackup_config_server – создает каталог /var/backup, пользователя borg, ~borg/.ssh, и файл authorized_keys
   * borgbackup_config_backup – конфигурирует сервис и таймер для запуска бэкапа
