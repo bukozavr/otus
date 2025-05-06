@@ -1,0 +1,3 @@
+---
+# defaults file for pull_ssh_key
+key_user: "borg"

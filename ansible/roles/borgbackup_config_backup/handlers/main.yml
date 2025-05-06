@@ -1,0 +1,13 @@
+---
+# handlers file for borgbackup_config_backup
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: borg-backup.service
+    state: restarted
+
+- name: restart_timer
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: borg-backup.timer
+    state: restarted

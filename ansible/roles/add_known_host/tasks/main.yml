@@ -1,0 +1,6 @@
+---
+# tasks file for add_known_host
+- name: Run ssh-keyscan to fetch the host key
+  shell: ssh-keyscan -H {{ new_host }} >> ~/.ssh/known_hosts
+  args:
+    chdir: /tmp

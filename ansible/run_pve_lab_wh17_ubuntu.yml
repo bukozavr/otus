@@ -1,0 +1,77 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s232 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 232
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s233 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 233
+    img_alias: noble
+    add_disks: 1
+    add_disks_size: 2
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+
+- name: work on vm
+  hosts: wh17_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+  tags: [never, init]
+
+
+- name: generate ssh key on client
+  hosts: wh17_client
+  become: true
+  vars:
+    key_user: "root"
+  roles:
+    - role: generate_ssh_key
+    - role: get_ssh_key
+  tags: [never, init]
+
+
+- name: backup server
+  hosts: wh17_backup
+  become: true
+  vars:
+    key_user: "borg"
+  roles:
+#    - role: lvm_on_sdb
+    - role: borgbackup_install
+    - role: borgbackup_config_server
+    - role: pull_ssh_key
+  tags: [never, init]
+
+- name: backup client
+  hosts: wh17_client
+  become: true
+  roles:
+    - role: add_known_host
+    - role: borgbackup_install
+    - role: borgbackup_config_backup
+  tags: [never, init]

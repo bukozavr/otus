@@ -1,0 +1,31 @@
+---
+# tasks file for borgbackup_config_server
+- name: Add the user 'borg', appending the group 'borg' to the user's groups
+  ansible.builtin.user:
+    name: borg
+    create_home: true
+    state: present
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "/var/backup"
+    owner: borg
+    group: borg
+    state: directory
+
+- name: Creates directory
+  ansible.builtin.file:
+    path: "~borg/.ssh"
+    owner: borg
+    group: borg
+    state: directory
+    mode: "0700"
+
+- name: Creates file for ssh keys
+  ansible.builtin.file:
+    path: "~borg/.ssh/authorized_keys"
+    owner: borg
+    group: borg
+    state: touch
+    mode: "0600"
+

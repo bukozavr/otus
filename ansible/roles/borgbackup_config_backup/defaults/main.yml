@@ -1,0 +1,8 @@
+---
+# defaults file for borgbackup_config_backup
+borg_server: "192.168.1.233"
+borg_user: "borg"
+repo_pass: "12345678"
+repo_path: "/var/backup/borg/"
+backup_root_path: "/"
+backup_dir: "etc"

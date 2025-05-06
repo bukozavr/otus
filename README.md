@@ -69,3 +69,26 @@ ansible-playbook run_systemd_astra.yml -i pve.ini
 ```
 ansible-playbook run_pve_lab_wh16_ubuntu.yml -i pve.ini --tags init --ask-become-pas
 ```
+
+## ДЗ 17. Резервное копирование. BorgBackup
+
+- написаны роли Ansible для установки и настройки сервисов
+  * auditd_install, rsyslog_install – установка служб
+  * rsyslog_config_server – настройка параметров rsyslog на log сервере
+  * rsyslog_config_client – настройка параметров rsyslog на web сервере
+  * borgbackup_install – установка borgbackup, без настроек
+  * borgbackup_config_server – создает каталог /var/backup, пользователя borg, ~borg/.ssh, и файл authorized_keys
+  * borgbackup_config_backup – конфигурирует сервис и таймер для запуска бэкапа
+  * generate_ssh_key – генерация ssh ключей. 
+  * get_ssh_key – скопировать публичный ключ с удаленной машины
+  * pull_ssh_key – скопировать публичный ключ на удаленную машину в authorized_keys указанного пользователя
+  * add_known_host – добавить ключ удаленного хоста в список известных хостов на управляющем узле (клиенте).
+
+
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh17_ubuntu.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh17_ubuntu.yml -i pve.ini --tags init --ask-become-pas
+```

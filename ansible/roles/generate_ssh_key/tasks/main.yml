@@ -1,0 +1,15 @@
+---
+# tasks file for generate_ssh_key
+
+- name: Creates directory for SSH key
+  ansible.builtin.file:
+    path: "~{{ key_user }}/.ssh"
+    owner: "{{ key_user }}"
+    group: "{{ key_user }}"
+    state: directory
+    mode: "0700"
+
+- name: Generate SSH key pair if it does not exist
+  community.crypto.openssh_keypair:
+    path: "~{{ key_user }}/.ssh/id_rsa"
+    state: present

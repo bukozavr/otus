@@ -1,0 +1,33 @@
+---
+# tasks file for pull_ssh_key
+
+- name: Copy file
+  ansible.builtin.copy:
+    src: "~/tmp_pub_key/id_rsa.pub"
+    dest: "~{{ key_user }}/tmp_pub_key/"
+
+- name: Read the local input file into a variable
+  ansible.builtin.slurp:
+    path: "~{{ key_user }}/tmp_pub_key/id_rsa.pub"
+  register: input_content
+
+- name: Ensure the directory exists
+  ansible.builtin.file:
+    path: "~{{ key_user }}/.ssh"
+    state: directory
+    owner: "{{ key_user }}"
+    group: "{{ key_user }}"
+
+- name: Add line to file if not present using lineinfile
+  ansible.builtin.lineinfile:
+    path: "~{{ key_user }}/.ssh/authorized_keys"
+    line: "{{ input_content.content  | b64decode | regex_search('ssh.+') }}"
+    create: yes
+    owner: "{{ key_user }}"
+    group: "{{ key_user }}"
+    mode: '0600'
+
+- name: Delete content & directory
+  ansible.builtin.file:
+    state: absent
+    path: "~{{ key_user }}/tmp_pub_key/"

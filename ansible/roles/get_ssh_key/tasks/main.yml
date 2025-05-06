@@ -1,0 +1,7 @@
+---
+# tasks file for get_ssh_key
+- name: Fetch a file from the remote server
+  ansible.builtin.fetch:
+    src: "~{{ key_user }}/.ssh/id_rsa.pub"
+    dest: "~/tmp_pub_key/id_rsa.pub"
+    flat: yes

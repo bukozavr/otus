@@ -1,0 +1,26 @@
+---
+- name: Service configuration from template
+  ansible.builtin.template:
+    src: borg-backup.service.j2
+    dest: /etc/systemd/system/borg-backup.service
+  notify: restart_service
+
+- name: Timer configuration from template
+  ansible.builtin.template:
+    src: borg-backup.timer.j2
+    dest: /etc/systemd/system/borg-backup.timer
+  notify: restart_timer
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: borg-backup.service
+    state: started
+    enabled: yes
+  notify: restart_service
+
+- name: Ensure Timer is enabled and running
+  ansible.builtin.service:
+    name: borg-backup.timer
+    state: started
+    enabled: yes
+  notify: restart_timer

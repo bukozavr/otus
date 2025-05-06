@@ -1,0 +1,3 @@
+---
+# defaults file for get_ssh_key
+key_user: "root"
