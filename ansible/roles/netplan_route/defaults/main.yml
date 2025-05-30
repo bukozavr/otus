@@ -1,0 +1,7 @@
+---
+# defaults file for netplan_route
+srv: "fake-server"
+interface_id: "eth1"
+route_id: "1"
+network_ip: ""
+next_hop: ""

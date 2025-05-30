@@ -1,0 +1,7 @@
+---
+# tasks file for ip_forward_enable
+- name: set up forward packages across routers
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present

@@ -1,0 +1,10 @@
+---
+# handlers file for rename_host
+- name: reboot_host
+  ansible.builtin.reboot:
+    msg: "Rebooting machine in 5 seconds"
+
+- name: wait_30
+  wait_for:
+    delay: 30
+    timeout: 0

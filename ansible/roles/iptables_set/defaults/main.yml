@@ -1,0 +1,5 @@
+---
+# defaults file for iptables_set
+srv: "fake-server"
+interface_id: "eth0"
+lan_ip: "192.168.0.0/22"

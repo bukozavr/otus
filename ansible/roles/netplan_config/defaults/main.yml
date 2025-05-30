@@ -1,0 +1,11 @@
+---
+# defaults file for netplan_config
+srv: "fake-server"
+dns1: "192.168.1.1"
+dns_search: "test.local"
+
+# nic_id = 1 means "eth1"
+interface_id: "eth1"
+interface_ip: "192.168.0.1/28"
+
+

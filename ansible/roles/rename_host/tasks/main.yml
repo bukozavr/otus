@@ -1,0 +1,24 @@
+---
+# tasks file for rename_host
+- name: Set old hostname
+  set_fact:
+    old_name: "{{ old_hostname }}"
+
+- name: Изменение hostname в /etc/hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hostname
+    regexp: '^.*$'
+    line: "{{ new_hostname }}"
+    state: present
+  notify:
+    - reboot_host
+    - wait_30
+  when: (ansible_hostname == old_name)
+
+- name: Обновление записи хоста в файле hosts
+  ansible.builtin.replace:
+    path: /etc/hosts
+    regexp: '{{ old_hostname }}'
+#    regexp: '(\s+){{ old_hostname }}(\s+.*)?$'
+    replace: '{{ new_hostname }}'
+#  when: (ansible_hostname == old_name)

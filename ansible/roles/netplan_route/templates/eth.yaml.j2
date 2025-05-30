@@ -1,0 +1,7 @@
+network:
+  version: 2
+  ethernets:
+    {{ interface_id }}:
+      routes:
+      - to: {{ network_ip }}
+        via: {{ next_hop }}

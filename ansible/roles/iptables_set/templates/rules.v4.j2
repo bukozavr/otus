@@ -1,0 +1,7 @@
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [1:81]
+-A POSTROUTING ! -d {{ lan_ip }} -o {{ interface_id }} -j MASQUERADE
+COMMIT

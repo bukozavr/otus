@@ -1,0 +1,11 @@
+network:
+  version: 2
+  ethernets:
+    {{ interface_id }}:
+      addresses:
+      - "{{ interface_ip }}"
+      nameservers:
+        addresses:
+        - "{{ dns1 }}"
+        search:
+        - "{{ dns_search }}"

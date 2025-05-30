@@ -1,0 +1,8 @@
+---
+# defaults file for add_nics
+vm_last_octet: "152"
+vm_bridge: "vmbr1"
+nic:
+  - { nic_id: "1", nic_ip: "192.168.0.1/28" }
+  - { nic_id: "2", nic_ip: "192.168.255.9/30" }
+  - { nic_id: "3", nic_ip: "192.168.0.33/28" }

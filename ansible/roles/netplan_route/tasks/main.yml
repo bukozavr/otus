@@ -1,0 +1,15 @@
+---
+# tasks file for netplan_route
+- name: Set srvname
+  set_fact:
+    srv_name: "{{ srv }}"
+
+
+- name: copy netplan route configuration from template
+  ansible.builtin.template:
+    src: eth.yaml.j2
+    dest: /etc/netplan/{{ interface_id }}-r-{{ route_id }}.yaml
+    mode: "0600"
+    owner: "root"
+  when: (ansible_hostname == srv_name)
+

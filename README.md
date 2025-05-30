@@ -89,3 +89,24 @@ ansible-playbook run_pve_lab_wh16_ubuntu.yml -i pve.ini --tags init --ask-become
 ```
 ansible-playbook run_pve_lab_wh17_ubuntu.yml -i pve.ini --tags init --ask-become-pas
 ```
+
+## ДЗ 18. Архитектура сетей
+
+- написаны роли Ansible для установки и настройки сервисов
+  * add_nics – Для ВМ proxmox добавляются сетевые интерфейсы. Плейбук управляет настройками ВМ через сервер виртуализации proxmox. ВМ выключается, для нее добавляются сетевые интерфейсы, заданные в переменных, затем ВМ включается. Все интерфейсы по умолчанию добавляются к виртуальному коммутатору vmbr1
+  * rename_host -  Роль изменяет имя сервера в файлах / etc/hostname, /etc/hosts и перезагружает сервер
+  * netplan_config – Роль создает конфигурацию netplan для одного дополнительного интерфейса. В параметрах запуска роли указывается идентификатор интерфейса, ip адрес. Если у ВМ несколько интерфейсов, то роль выполнить несколько раз.
+  * netplan_route - Роль создает конфигурацию netplan для одного маршрута. В параметрах запуска роли указывается идентификатор интерфейса, ip адрес сети, шлюз. Если нужно определить несколько маршрутов, то роль выполнить несколько раз.
+  * netplan_clear – Роль удаляет конфигурации netplan по умолчанию. Удаляются файлы, имена которых начинаются с цифр.
+  * ip_forward_enable – Включает форвардинг трафика ip4
+  * iptables_set – создает сервис, который применяет (восстанавливает) набор правил NAT.
+  * restart_host – перезагрузка сервера
+
+
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh18_ubuntu.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh18_ubuntu.yml -i pve.ini --tags init --ask-become-pas
+```

@@ -1,0 +1,35 @@
+---
+# tasks file for netplan_clear
+- name: Find default config files as a list
+  ansible.builtin.find:
+    paths: /etc/netplan/
+    file_type: file
+    use_regex: yes
+    patterns: ['^\d+.*\.yaml$']
+  register: result
+
+- name: Display found log files
+  ansible.builtin.debug:
+    var: result
+
+- name: Copy backup netplan default config
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "/etc/netplan/{{ item.path | basename }}.bak"
+    remote_src: yes
+  loop: "{{ result.files }}"
+
+
+- name: Remove netplan default config files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: " {{ result.files }}"
+
+
+#- name: Remove netplan default config
+#  ansible.builtin.file:
+#    path: /etc/netplan/{{ netplan_config }}
+#    for delete all files
+#    path: /etc/netplan
+#    state: absent

@@ -1,0 +1,7 @@
+---
+# handlers file for iptables_set
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: iptables-restore.service
+    state: restarted

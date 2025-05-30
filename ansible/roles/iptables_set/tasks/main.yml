@@ -1,0 +1,37 @@
+---
+# tasks file for iptables_set
+- name: Set srvname
+  set_fact:
+    srv_name: "{{ srv }}"
+
+
+- name: ensures /etc/iptables dir exists
+  ansible.builtin.file:
+    path: "/etc/iptables"
+    state: directory
+  when: (ansible_hostname == srv_name)
+
+- name: copy iptables rules from template
+  ansible.builtin.template:
+    src: rules.v4.j2
+    dest: /etc/iptables/rules.v4
+    mode: "600"
+    owner: "root"
+  when: (ansible_hostname == srv_name)
+
+- name: copy iptables-restore service
+  ansible.builtin.copy:
+    src: iptables-restore.service
+    dest: /etc/systemd/system/iptables-restore.service
+    group: root
+    owner: root
+  notify: restart_service
+  when: (ansible_hostname == srv_name)
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: iptables-restore.service
+    state: started
+    enabled: yes
+  notify: restart_service
+  when: (ansible_hostname == srv_name)

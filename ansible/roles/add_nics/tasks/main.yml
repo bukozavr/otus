@@ -1,0 +1,24 @@
+---
+# tasks file for add_nics
+- name: shutdown vm
+  command: qm shutdown {{ vm_last_octet }}
+
+- name: add nic
+  ansible.builtin.command: >
+    qm set {{ vm_last_octet }}
+    --net{{ item.nic_id }} virtio,bridge={{ vm_bridge }}
+  loop: "{{ nic }}"
+
+- name: set nic
+  ansible.builtin.command: >
+    qm set {{ vm_last_octet }}
+    --ipconfig{{ item.nic_id }} ip={{ item.nic_ip }}
+  loop: "{{ nic }}"
+
+- name: start vm
+  command: qm start {{ vm_last_octet }}
+
+- name: wait_30
+  wait_for:
+    delay: 30
+    timeout: 0

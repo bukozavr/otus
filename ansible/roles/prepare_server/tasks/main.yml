@@ -50,6 +50,12 @@
     state: present
   when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 
+- name: install tree
+  ansible.builtin.apt:
+    name: tree
+    state: present
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
+
 #- name: install chrony
 #  ansible.builtin.apt:
 #    name: chrony

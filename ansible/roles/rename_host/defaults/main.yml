@@ -1,0 +1,4 @@
+---
+# defaults file for rename_host
+new_hostname: "newsrv"
+old_hostname: "oldsrv"

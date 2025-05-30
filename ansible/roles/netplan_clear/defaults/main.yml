@@ -1,0 +1,3 @@
+---
+# defaults file for netplan_clear
+netplan_config: "50-cloud-init.yaml"
