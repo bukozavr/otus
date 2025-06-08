@@ -1,0 +1,7 @@
+---
+# handlers file for knockd_install
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: knockd.service
+    state: restarted

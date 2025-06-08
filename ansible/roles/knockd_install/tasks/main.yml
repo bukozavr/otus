@@ -1,0 +1,35 @@
+---
+# tasks file for knockd_install
+- name: Ensure Knockd is installed
+  ansible.builtin.apt:
+    name: knockd
+    state: latest
+    update_cache: yes
+
+- name: Replace knockd options
+  ansible.builtin.replace:
+    path: /etc/default/knockd
+    regexp: 'START_KNOCKD=0'
+    replace: 'START_KNOCKD=1'
+
+- name: copy knockd config
+  ansible.builtin.template:
+    src: knockd.conf.j2
+    dest: /etc/knockd.conf
+    mode: "600"
+    owner: "root"
+
+- name: copy knockd service
+  ansible.builtin.copy:
+    src: knockd.service
+    dest: /etc/systemd/system/knockd.service
+    group: root
+    owner: root
+  notify: restart_service
+
+- name: Ensure Service is enabled and running
+  ansible.builtin.service:
+    name: knockd.service
+    state: started
+    enabled: yes
+  notify: restart_service

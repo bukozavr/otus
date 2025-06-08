@@ -1,0 +1,4 @@
+---
+# defaults file for knockd_install
+nic_id: "eth1"
+remote_ip: "192.168.255.2"

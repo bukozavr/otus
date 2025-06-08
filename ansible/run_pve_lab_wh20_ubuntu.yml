@@ -1,0 +1,208 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s151 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 151
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s152 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 152
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s155 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 155
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s158 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 158
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on vm - update OS, prepare server
+  hosts: wh20_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+  tags: [never, init]
+
+
+- name: work on proxmox - create nics on s151 ubuntu - InetRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 151
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.255.1/30" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s158 ubuntu - InetRouter2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 158
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.255.13/30" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s152 ubuntu - CentralRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 152
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.255.2/30" }
+      - { nic_id: "2", nic_ip: "192.168.0.1/28" }
+      - { nic_id: "3", nic_ip: "192.168.255.9/30" }
+      - { nic_id: "4", nic_ip: "192.168.0.33/28" }
+      - { nic_id: "5", nic_ip: "192.168.255.5/30" }
+      - { nic_id: "6", nic_ip: "192.168.0.65/26" }
+      - { nic_id: "7", nic_ip: "192.168.255.14/26" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s155 ubuntu - centralServer
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 155
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.0.2/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on vm - rename host
+  hosts: wh20_names
+  gather_facts: 1
+  become: true
+  tags: [never, init, restore]
+
+  roles:
+    - { role: rename_host, old_hostname: "s151", new_hostname: "InetRouter" }
+    - { role: rename_host, old_hostname: "s158", new_hostname: "InetRouter2" }
+    - { role: rename_host, old_hostname: "s152", new_hostname: "CentralRouter" }
+    - { role: rename_host, old_hostname: "s155", new_hostname: "CentralServer" }
+
+- name: work on vm - network settings
+  hosts: wh20_names
+  gather_facts: 1
+  become: true
+  tags: [never, init, restore]
+
+  roles:
+
+    - { role: netplan_config, srv: "InetRouter", interface_id: "eth0", interface_ip: "192.168.1.151/24" }
+    - { role: netplan_route,  srv: "InetRouter", interface_id: "eth0", route_id: "1", network_ip: "default", next_hop: "192.168.1.1" }
+
+    - { role: netplan_config, srv: "InetRouter", interface_id: "eth1", interface_ip: "192.168.255.1/30" }
+    - { role: netplan_route,  srv: "InetRouter", interface_id: "eth1", route_id: "1", network_ip: "192.168.2.0/24", next_hop: "192.168.255.2" }
+    - { role: netplan_route,  srv: "InetRouter", interface_id: "eth1", route_id: "2", network_ip: "192.168.3.0/24", next_hop: "192.168.255.2" }
+    - { role: netplan_route,  srv: "InetRouter", interface_id: "eth1", route_id: "3", network_ip: "192.168.0.0/24", next_hop: "192.168.255.2" }
+
+    - { role: netplan_config, srv: "InetRouter2", interface_id: "eth0", interface_ip: "192.168.1.158/24" }
+    - { role: netplan_route,  srv: "InetRouter2", interface_id: "eth0", route_id: "1", network_ip: "default", next_hop: "192.168.1.1" }
+
+    - { role: netplan_config, srv: "InetRouter2", interface_id: "eth1", interface_ip: "192.168.255.13/30" }
+    - { role: netplan_route,  srv: "InetRouter2", interface_id: "eth1", route_id: "1", network_ip: "192.168.0.0/24", next_hop: "192.168.255.14" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth0", interface_ip: "192.168.1.152/24" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth1", interface_ip: "192.168.255.2/30" }
+    - { role: netplan_route,  srv: "CentralRouter", interface_id: "eth1", route_id: "1", network_ip: "default", next_hop: "192.168.255.1" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth2", interface_ip: "192.168.0.1/28" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth3", interface_ip: "192.168.255.9/30" }
+    - { role: netplan_route,  srv: "CentralRouter", interface_id: "eth3", route_id: "1", network_ip: "192.168.2.0/24", next_hop: "192.168.255.10" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth4", interface_ip: "192.168.0.33/28" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth5", interface_ip: "192.168.255.5/30" }
+    - { role: netplan_route,  srv: "CentralRouter", interface_id: "eth5", route_id: "1", network_ip: "192.168.3.0/24", next_hop: "192.168.255.6" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth6", interface_ip: "192.168.0.65/26" }
+
+    - { role: netplan_config, srv: "CentralRouter", interface_id: "eth7", interface_ip: "192.168.255.14/30" }
+
+    - { role: netplan_config, srv: "CentralServer", interface_id: "eth0", interface_ip: "192.168.1.155/24" }
+
+    - { role: netplan_config, srv: "CentralServer", interface_id: "eth1", interface_ip: "192.168.0.2/28" }
+    - { role: netplan_route,  srv: "CentralServer", interface_id: "eth1", route_id: "1", network_ip: "default", next_hop: "192.168.0.1" }
+
+    - role: netplan_clear
+
+    - role: ip_forward_enable
+      when: '"Router" in inventory_hostname'
+
+    - { role: iptables_set, srv: "InetRouter", interface_id: "eth0" }
+
+    - role: restart_host
+
+# new actions for WH20
+    - role: knockd_install
+      when: inventory_hostname == "InetRouter"
+
+    - role: iptables_wh20_set
+      when: inventory_hostname == "InetRouter2"
+
+- name: Install nginx on Central Server
+  hosts: wh20_web
+  gather_facts: 1
+  become: true
+  tags: [never, init, restore]
+
+  roles:
+    - role: nginx_install
+
