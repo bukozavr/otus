@@ -110,3 +110,16 @@ ansible-playbook run_pve_lab_wh17_ubuntu.yml -i pve.ini --tags init --ask-become
 ```
 ansible-playbook run_pve_lab_wh18_ubuntu.yml -i pve.ini --tags init --ask-become-pas
 ```
+
+## ДЗ 20. Фильтрация трафика - iptables
+
+- написаны роли Ansible для установки и настройки сервисов
+  * iptables_wh20_set – создает сервис, который применяет (восстанавливает) набор правил NAT на сервере InetRouter2.
+  * knockd_install – устанавливает knockd, создает сервис для запуска knockd, копирует файл конфигурации
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh20_ubuntu.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh20_ubuntu.yml -i pve.ini --tags init --ask-become-pas
+```
