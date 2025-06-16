@@ -1,0 +1,4 @@
+---
+# handlers file for ipv6_disable
+- name: reload_sysctl
+  command: sysctl -p

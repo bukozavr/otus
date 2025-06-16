@@ -1,0 +1,25 @@
+---
+# tasks file for ipv6_disable
+- name: Отключить IPv6 в sysctl
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^#?net.ipv6.conf.all.disable_ipv6=.*'
+    line: 'net.ipv6.conf.all.disable_ipv6=1'
+    state: present
+  notify: reload_sysctl
+
+- name: Отключить IPv6 для интерфейсов
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^#?net.ipv6.conf.default.disable_ipv6=.*'
+    line: 'net.ipv6.conf.default.disable_ipv6=1'
+    state: present
+  notify: reload_sysctl
+
+- name: Проверить статус IPv6
+  shell: "sysctl net.ipv6.conf.all.disable_ipv6"
+  register: ipv6_status
+
+- name: Показать статус IPv6
+  debug:
+    msg: "IPv6 отключен: {{ 'ДА' if 'net.ipv6.conf.all.disable_ipv6 = 1' in ipv6_status.stdout else 'НЕТ' }}"

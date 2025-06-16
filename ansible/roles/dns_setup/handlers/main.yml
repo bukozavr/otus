@@ -1,0 +1,7 @@
+---
+# handlers file for dns_setup
+- name: restart_service
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: bind9
+    state: restarted

@@ -1,0 +1,63 @@
+acl "internal" {
+    192.168.1.232/30;  // Локальная сеть
+};
+acl "external" {
+    192.168.1.236/30;  // как бы DMZ
+};
+
+view "internal" {
+    match-clients { internal; };
+    allow-query { internal; };
+    zone "dns.lab" {
+       type slave;
+       file "/etc/bind/zones/db.internal.dns.lab";
+       masters { 192.168.1.228; };             # добавлен адрес мастера
+       masterfile-format text;
+       allow-notify { 192.168.1.228; };
+    };
+
+    zone "newdns.lab" {
+       type slave;
+       file "/etc/bind/zones/db.internal.newdns.lab";
+       masters { 192.168.1.228; };             # добавлен адрес мастера
+       masterfile-format text;
+       allow-notify { 192.168.1.228; };
+    };
+
+// be authoritative for the localhost forward and reverse zones, and for
+// broadcast zones as per RFC 1912
+    zone "." {
+            type hint;
+            file "/usr/share/dns/root.hints";
+    };
+    zone "localhost" {
+            type master;
+            file "/etc/bind/db.local";
+    };
+    zone "127.in-addr.arpa" {
+            type master;
+            file "/etc/bind/db.127";
+    };
+    zone "0.in-addr.arpa" {
+            type master;
+            file "/etc/bind/db.0";
+    };
+    zone "255.in-addr.arpa" {
+            type master;
+            file "/etc/bind/db.255";
+    };
+
+};
+
+view "external" {
+    match-clients { external; };
+    allow-query { external; };
+
+    zone "dns.lab" {
+       type slave;
+       file "/etc/bind/zones/db.external.dns.lab";
+       masters { 192.168.1.228; };             # добавлен адрес мастера
+       masterfile-format text;
+       allow-notify { 192.168.1.228; };
+    };
+};

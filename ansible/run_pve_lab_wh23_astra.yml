@@ -1,0 +1,123 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s228 astra
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 228
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s229 astra
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 229
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s232 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 232
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s236 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 236
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on - vm initial settings
+  hosts: wh23_astra
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+    - role: dnsutils_install
+    - role: ipv6_disable
+  tags: [never, init]
+
+- name: work on vm - rename hosts
+  hosts: wh23_astra
+  gather_facts: 1
+  become: true
+  roles:
+
+    - { role: rename_host, old_hostname: "s228", new_hostname: "ns01" }
+    - { role: rename_host, old_hostname: "s229", new_hostname: "ns02" }
+    - { role: rename_host, old_hostname: "s232", new_hostname: "client01" }
+    - { role: rename_host, old_hostname: "s236", new_hostname: "client02" }
+  tags: [never, init]
+
+
+- name: work on vm - network config
+  hosts: wh23_astra
+  gather_facts: 1
+  become: true
+  roles:
+
+    - { role: netplan_config, srv: "client01", interface_id: "eth0", interface_ip: "192.168.1.232/24", dns1: "192.168.1.228", dns_search: "lab.local" }
+    - { role: netplan_route,  srv: "client01", interface_id: "eth0", route_id: "1", network_ip: "default", next_hop: "192.168.1.1" }
+
+    - { role: netplan_config, srv: "client02", interface_id: "eth0", interface_ip: "192.168.1.236/24", dns1: "192.168.1.228", dns_search: "lab.local" }
+    - { role: netplan_route,  srv: "client02", interface_id: "eth0", route_id: "1", network_ip: "default", next_hop: "192.168.1.1" }
+
+    - role: netplan_clear
+      when: '"client" in inventory_hostname'
+
+    - role: restart_host
+#      when: '"client" in inventory_hostname'
+#      when: inventory_hostname == "client02"
+  tags: [never, init]
+
+
+- name: work on vm - dns setup
+  hosts: wh23_astra
+  gather_facts: 1
+  become: true
+  roles:
+
+    - role: dnsutils_install
+
+    - role: dns_install
+      when: '"ns0" in inventory_hostname'
+
+    - role: dns_setup
+      when: '"ns0" in inventory_hostname'
+
+  tags: [never, init]
+
+

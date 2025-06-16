@@ -1,0 +1,13 @@
+---
+# tasks file for dns_install
+- name: update cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
+
+- name: install bind
+  ansible.builtin.apt:
+    name: bind9
+    state: present
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"

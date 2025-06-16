@@ -1,0 +1,60 @@
+---
+# tasks file for dns_setup
+
+- name: copy dns options from template
+  ansible.builtin.template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+#    mode: "0640"
+    owner: "bind"
+    group: "bind"
+  notify: restart_service
+
+
+- name: Recursively change ownership of a directory for zones
+  ansible.builtin.file:
+    path: /etc/bind/zones
+    state: directory
+    recurse: yes
+    owner: "bind"
+    group: "bind"
+#    mode: "0640"
+
+- name: Recursively change ownership of a directory for logs
+  ansible.builtin.file:
+    path: /var/log/named
+    state: directory
+#    recurse: yes
+    owner: "bind"
+    group: "bind"
+#    mode: "0640"
+
+- name: copy dns zones
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/bind/zones/"
+    owner: "bind"
+    group: "bind"
+#    mode: "640"
+  with_fileglob:
+#    - "{{ ansible_hostname }}/*"
+    - "db*"
+  notify: restart_service
+
+- name: copy dns global config
+  ansible.builtin.copy:
+    src: "named.conf"
+    dest: "/etc/bind/named.conf"
+    owner: "bind"
+    group: "bind"
+#    mode: "640"
+  notify: restart_service
+
+- name: copy dns zones and views config
+  ansible.builtin.copy:
+    src: "named.conf.local_{{ ansible_hostname }}"
+    dest: "/etc/bind/named.conf.local"
+    owner: "bind"
+    group: "bind"
+ #   mode: "640"
+  notify: restart_service

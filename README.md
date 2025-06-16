@@ -123,3 +123,18 @@ ansible-playbook run_pve_lab_wh18_ubuntu.yml -i pve.ini --tags init --ask-become
 ```
 ansible-playbook run_pve_lab_wh20_ubuntu.yml -i pve.ini --tags init --ask-become-pas
 ```
+
+## ДЗ 23. DNS - настройка и обслуживание
+
+Серверы с ОС Astra Linux, клиенты с ОС Ubuntu
+- написаны роли Ansible для установки и настройки сервисов
+  * dns_install – установка bind9. Применяется к серверам с именами ns0*.
+  * dnsutils_install – установка утилит для работы с dns, типа dig. Устанавливается на всех компьютерах.
+  * dns_setup – настройка DNS серверов, копирование файлов конфигурации DNS
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh23_astra.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh23_astra.yml -i pve.ini --tags init --ask-become-pas
+```

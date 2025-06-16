@@ -1,0 +1,20 @@
+$TTL    604800
+@       IN      SOA     dns.dns.lab. admin.dns.lab. (
+                              3         ; Serial
+                             50         ; Refresh
+                             50         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+; name servers - NS records - определяем имена DNS-серверов
+        IN      NS      dns.dns.lab.
+        IN      NS      ns01.dns.lab.
+        IN      NS      ns02.dns.lab.
+
+; name servers - A records - определяем адреса компьютеров, сначала сервер(ы) DNS
+dns.dns.lab.            IN      A      192.168.1.228
+ns01.dns.lab.           IN      A      192.168.1.228
+dns.dns.lab.            IN      A      192.168.1.229
+ns02.dns.lab.           IN      A      192.168.1.229
+
+web1.dns.lab.           IN      A      192.168.1.232
+
