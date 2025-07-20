@@ -1,0 +1,132 @@
+---
+- name: work on proxmox - create all VMs
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - { role: pve_create_vm_main,    vm_name: "main",    vm_last_octet: "154", hosts: proxmox_root }
+    - { role: pve_create_vm_db2,     vm_name: "db2",     vm_last_octet: "155", hosts: proxmox_root }
+    - { role: pve_create_vm_backup,  vm_name: "backup",  vm_last_octet: "157", hosts: proxmox_root }
+
+- name: work on - vm initial settings
+  hosts: bear_barman
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+
+- name: work on - DB servers install PostgreSQL
+  hosts: bear_dbs
+  gather_facts: 1
+  become: true
+  roles:
+    - role: bear_pg_install
+    - role: bear_pg_replication
+
+
+- name: work on - DBs and Barman
+  hosts: bear_barman
+  gather_facts: 1
+  become: true
+  roles:
+    - role: bear_pg_install
+    - role: bear_barman_install
+
+
+
+### change ssh key db2 <-> backup
+
+- name: generate ssh key
+  hosts: bear_backup
+  become: true
+  become_user: "barman"
+  vars:
+    key_user: "barman"
+  roles:
+    - role: generate_ssh_key
+    - role: get_ssh_key
+    - { role: add_known_host, new_host: "{{ secondary_db_server_ip }}" }
+
+
+- name: pull ssh key
+  hosts: bear_db2
+  become: true
+  vars:
+    key_user: "postgres"
+  roles:
+    - role: pull_ssh_key
+
+
+- name: generate ssh key
+  hosts: bear_db2
+  become: true
+  become_user: "postgres"
+  vars:
+    key_user: "postgres"
+  roles:
+    - role: generate_ssh_key
+    - role: get_ssh_key
+    - { role: add_known_host, new_host: "{{ barman_server_ip }}" }
+
+
+- name: pull ssh key
+  hosts: bear_backup
+  become: true
+  vars:
+    key_user: "barman"
+  roles:
+    - role: pull_ssh_key
+
+### change ssh key main <-> backup
+
+- name: generate ssh key
+  hosts: bear_backup
+  become: true
+  become_user: "barman"
+  vars:
+    key_user: "barman"
+  roles:
+    - role: generate_ssh_key
+    - role: get_ssh_key
+    - { role: add_known_host, new_host: "{{ primary_db_server_ip }}" }
+
+
+- name: pull ssh key
+  hosts: bear_main
+  become: true
+  vars:
+    key_user: "postgres"
+  roles:
+    - role: pull_ssh_key
+
+
+- name: generate ssh key
+  hosts: bear_main
+  become: true
+  become_user: "postgres"
+  vars:
+    key_user: "postgres"
+  roles:
+    - role: generate_ssh_key
+    - role: get_ssh_key
+    - { role: add_known_host, new_host: "{{ barman_server_ip }}" }
+
+
+- name: pull ssh key
+  hosts: bear_backup
+  become: true
+  vars:
+    key_user: "barman"
+  roles:
+    - role: pull_ssh_key
+
+- name: work on - DBs and Barman
+  hosts: bear_barman
+  gather_facts: 1
+  become: true
+  roles:
+    - role: bear_barman_setup

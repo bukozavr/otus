@@ -1,0 +1,110 @@
+---
+# tasks file for pve_create_vm_name_db2
+
+# проверить, что ВМ существует и включена.
+# если существует, заново создавать не нужно
+# если включена, изменить параметры не удастся
+# vm_last_octet - последний октет IP адреса. Используется в качестве идентификатора ВМ и используется в формировании имени ВМ
+- name: Check if VM exists in Proxmox
+  command: qm list
+  register: qm_list_output
+
+- name: Set fact if VM exists
+  set_fact:
+    vm_is_exists: "{{ qm_list_output.stdout_lines | select('search', vm_last_octet | string) | list | length > 0 }}"
+
+
+- name: new vm
+  block:
+    - name: create vm
+      command: >
+        qm create {{ vm_last_octet }}
+        --memory 2048
+        --net0 virtio,bridge=vmbr0
+        --net1 virtio,bridge=vmbr1
+        --scsihw virtio-scsi-pci
+        --cpu host
+        --cores 2
+        --name "{{ vm_name }}"
+      args:
+        chdir: /  # Указывает, что команда запускается из корня (опционально)
+
+    - name: import img
+      command: >
+        qm set {{ vm_last_octet }}
+        --scsi0 local-lvm:0,import-from="{{ img_dir }}/{{ img_alias }}"
+
+    - name: set vm
+      command: >
+        qm set {{ vm_last_octet  }}
+        --ide2 local-lvm:cloudinit
+        --boot order=scsi0
+        --serial0 socket --vga serial0
+        --ipconfig0 ip=192.168.1.{{ vm_last_octet }}/24
+        --ipconfig1 gw=192.168.22.1,ip=192.168.22.25/24
+        --nameserver {{ dns_server_ip }}
+        --searchdomain {{ dns_suffix }}
+        --ciuser {{ vmuser }}
+        --cipassword {{ vmpass }}
+        --ciupgrade 0
+        --agent enabled=1,freeze-fs-on-backup=1
+        --sshkeys ~/.ssh/id_rsa.pub
+
+    - name: vm disk resize
+      command: >
+        qm disk resize {{ vm_last_octet }} scsi0 15G
+
+    - name: copy ansible ssh key
+      copy:
+        src: id_rsa.pub
+        dest: /tmp/id_rsa.pub
+
+    - name: copy ansible ssh key to vm
+      command: >
+        qm set {{ vm_last_octet }}
+        --sshkeys /tmp/id_rsa.pub
+
+    - name: Set fact VM exists
+      set_fact:
+        vm_is_exists: true
+
+  when: not vm_is_exists
+
+- name: Check VM status
+  command: qm status {{ vm_last_octet }}
+  register: vm_status_output
+  when: vm_is_exists
+
+- name: Parse VM status
+  set_fact:
+    vm_is_stopped: "{{ 'stopped' in vm_status_output.stdout }}"
+  when: vm_is_exists
+
+- name: debug print vars
+  ansible.builtin.debug:
+    msg: "disks {{ add_disks }}, size: {{ add_disks_size }}, vm stopped: {{ vm_is_stopped }}, vm exist: {{ vm_is_exists }}"
+
+- name: Получить конфигурацию виртуальной машины
+  command: "qm config {{ vm_last_octet }}"
+  register: vm_config
+
+- name: Проверить, какие диски уже существуют
+  set_fact:
+    existing_disks: "{{ vm_config.stdout | regex_findall('scsi\\d+') }}"
+
+
+- name: vm add disks
+  command: >
+    qm set {{ vm_last_octet }} --scsi{{ item }} local-lvm:{{ add_disks_size }}
+  loop: "{{ range (0,add_disks + 1) | list }}"
+    #when: {{ add_disks }} > 0 
+  when: >
+    vm_is_exists and
+    add_disks >= 0 and
+    item >= 0 and
+    'scsi' + item | string not in existing_disks
+
+- name: start vm
+  command: qm start {{ vm_last_octet }}
+  notify: wait_120
+  when: vm_is_stopped

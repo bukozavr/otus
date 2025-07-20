@@ -1,18 +1,18 @@
 ---
-# edit /etc/hosts
+## edit /etc/hosts
 
-- name: Read entries from file
-  ansible.builtin.set_fact:
-    entries_content: "{{ lookup('file', entries_file) | split('\n') }}"
+#- name: Read entries from file
+#  ansible.builtin.set_fact:
+#    entries_content: "{{ lookup('file', entries_file) | split('\n') }}"
 
-- name: Add each entry to /etc/hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ item }}"
-    state: present
-  loop: "{{ entries_content }}"
+#- name: Add each entry to /etc/hosts
+#  ansible.builtin.lineinfile:
+#    path: /etc/hosts
+#    line: "{{ item }}"
+#    state: present
+#  loop: "{{ entries_content }}"
 
-# edit /etc/hosts end
+## edit /etc/hosts end
 
 - name: update cache
   ansible.builtin.apt:
@@ -53,6 +53,24 @@
 - name: install tree
   ansible.builtin.apt:
     name: tree
+    state: present
+  when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
+
+- name: install iperf3
+  ansible.builtin.apt:
+    name: iperf3
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: install iperf
+  ansible.builtin.apt:
+    name: iperf
+    state: present
+  when: ansible_facts['os_family'] == "Astra Linux"
+
+- name: install acl
+  ansible.builtin.apt:
+    name: acl
     state: present
   when: ansible_facts['os_family'] == "Debian" or ansible_facts['os_family'] == "Astra Linux"
 

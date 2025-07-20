@@ -1,0 +1,11 @@
+---
+# handlers file for pve_create_vm_name_router
+- name: wait_120
+  wait_for:
+    delay: 90
+    timeout: 0
+
+- name: wait_15
+  wait_for:
+    delay: 15
+    timeout: 0

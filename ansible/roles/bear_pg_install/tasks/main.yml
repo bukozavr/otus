@@ -1,0 +1,13 @@
+---
+# tasks file for bear_pg_install
+- name: install postgresql
+  ansible.builtin.apt:
+    pkg:
+    - postgresql
+    # Советуют в интернетах поставить, чтобы было меньше геморняка.
+    - postgresql-contrib
+    - libpq-dev
+    # Это чтобы ansible мог дальше рулить базами.
+    - python3-psycopg2
+#    - python3-pexpect.noarch
+    - python3-pexpect

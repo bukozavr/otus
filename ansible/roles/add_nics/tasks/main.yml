@@ -20,5 +20,5 @@
 
 - name: wait_30
   wait_for:
-    delay: 30
+    delay: 35
     timeout: 0

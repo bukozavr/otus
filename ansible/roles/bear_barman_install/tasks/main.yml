@@ -1,0 +1,18 @@
+---
+# tasks file for bear_barman_install
+- name: install barman cli
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 7200
+    pkg:
+    - barman-cli
+    state: present
+
+- name: install barman server
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 7200
+    pkg:
+    - barman
+    state: present
+  when: (ansible_hostname == "backup")

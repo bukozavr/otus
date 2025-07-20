@@ -1,0 +1,115 @@
+---
+# tasks file for bear_barman_setup
+- name: Create user in PG on main DB server
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "barman"
+    password: "{{ barman_password }}"
+    encrypted: true
+    role_attr_flags: SUPERUSER
+#    role_attr_flags: REPLICATION
+  ignore_errors: true
+  when: (ansible_hostname == "main")
+
+# Добавляем разрешения для подключения с хоста barman
+- name: Add permission for barman
+  ansible.builtin.lineinfile:
+    path: "{{ pg_etc_main }}/pg_hba.conf"
+    line: 'host all barman {{ barman_server_ip }}/32 scram-sha-256'
+  when: (ansible_hostname == "db2") or (ansible_hostname == "main")
+
+# Добавляем разрешения для подключения с хоста barman
+- name: Add permission for barman
+  ansible.builtin.lineinfile:
+    path: "{{ pg_etc_main }}/pg_hba.conf"
+    line: 'host replication barman {{ barman_server_ip }}/32 scram-sha-256'
+  when: (ansible_hostname == "db2") or (ansible_hostname == "main")
+
+# Перезагружаем службу postgresql-server
+- name: restart postgresql-server on node1
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+  when: (ansible_hostname == "db2") or (ansible_hostname == "main")
+
+# Копируем файл .pgpass
+- name: copy pgpass
+  ansible.builtin.template:
+    src: .pgpass.j2
+    dest: /var/lib/barman/.pgpass
+    owner: barman
+    group: barman
+    mode: '0600'
+  when: (ansible_hostname == "backup")
+
+# Копируем файл barman.conf
+- name: copy barman.conf
+  ansible.builtin.template:
+    src: barman.conf.j2
+    dest: /etc/barman.conf
+    owner: barman
+    group: barman
+    mode: '0755'
+  when: (ansible_hostname == "backup")
+
+# Копируем файл db_server.conf
+- name: copy db_server.conf
+  ansible.builtin.template:
+    src: db_server.conf.j2
+    dest: /etc/barman.d/{{ secondary_db_server_name }}.conf
+    owner: barman
+    group: barman
+    mode: '0755'
+  when: (ansible_hostname == "backup")
+
+- name: barman create-wal db2
+  become_user: barman
+  ansible.builtin.shell: barman receive-wal --create-slot  {{ secondary_db_server_name }}
+  when: (ansible_hostname == "backup")
+  ignore_errors: true
+
+- name: barman cron
+  become_user: barman
+  ansible.builtin.shell: barman cron
+  when: (ansible_hostname == "backup")
+  ignore_errors: true
+
+- name: barman switch-wal db2
+  become_user: barman
+#  ansible.builtin.shell: barman switch-wal {{ secondary_db_server_name }}
+  ansible.builtin.shell: barman switch-wal --force --archive {{ secondary_db_server_name }}
+  when: (ansible_hostname == "backup")
+  ignore_errors: true
+
+- name: barman first backup db2
+  become_user: barman
+  ansible.builtin.shell: barman backup {{ secondary_db_server_name }}
+  when: (ansible_hostname == "backup")
+  ignore_errors: true
+
+
+- name: Creates cron entry "barman cron"
+  ansible.builtin.cron:
+    name: "barman"
+    minute: "*"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: "barman"
+    job: "/usr/bin/barman cron"
+  when: (ansible_hostname == "backup")
+
+- name: Creates cron entry "run hourly"
+  ansible.builtin.cron:
+    name: "barman backup {{ secondary_db_server_name }}"
+    minute: "0,30"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: "barman"
+    job: "/usr/bin/barman backup {{ secondary_db_server_name }}"
+  when: (ansible_hostname == "backup")
+

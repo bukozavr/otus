@@ -1,0 +1,68 @@
+---
+# tasks file for bear_pg_replication
+#CREATE USER replicator WITH REPLICATION Encrypted PASSWORD 'Otus2022!';
+- name: Create replicator user
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: replication
+    password: '{{ replicator_password }}'
+    role_attr_flags: REPLICATION
+  ignore_errors: true
+#  when: (ansible_hostname == "main")
+
+#Копируем конфигурационный файл postgresql.conf
+- name: copy postgresql.conf
+  ansible.builtin.template:
+    src: postgresql.conf.j2
+    dest: "{{ pg_etc_main }}/postgresql.conf"
+    owner: postgres
+    group: postgres
+    mode: '0600'
+#  when: (ansible_hostname == "main")
+
+#Копируем конфигурационный файл pg_hba.conf
+- name: copy pg_hba.conf
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: "{{ pg_etc_main }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: '0600'
+#  when: (ansible_hostname == "main")
+
+#Перезапускаем службу postgresql-16
+- name: restart postgresql-server on node1
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+#  when: (ansible_hostname == "main")
+
+#Останавливаем postgresql-14 на хосте node2
+- name: stop postgresql-server on node2
+  ansible.builtin.service:
+    name: postgresql
+    state: stopped
+  when: (ansible_hostname == "db2")
+
+#Удаляем содержимое каталога /var/lib/postgresql/16/main/
+- name: Remove files from data catalog
+  ansible.builtin.file:
+    path: "{{ pg_home_main }}/"
+    state: absent
+  when: (ansible_hostname == "db2")
+
+#Копируем данные с node1 на node2
+- name: copy files from master to slave
+  become_user: postgres
+  ansible.builtin.expect:
+    command: 'pg_basebackup -h {{ master_ip }} -U replication -p 5432 -D /var/lib/postgresql/16/main/ -R -P'
+    responses:
+      '.*Password*': "{{ replicator_password }}"
+  when: (ansible_hostname == "db2")
+
+#Запускаем службу postgresql-16 на хосте node2
+- name: start postgresql-server on node2
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+  when: (ansible_hostname == "db2")

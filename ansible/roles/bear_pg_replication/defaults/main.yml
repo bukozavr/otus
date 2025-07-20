@@ -1,0 +1,4 @@
+---
+# defaults file for bear_pg_replication
+pg_etc_main: "/etc/postgresql/16/main"
+pg_home_main: "/var/lib/postgresql/16/main"

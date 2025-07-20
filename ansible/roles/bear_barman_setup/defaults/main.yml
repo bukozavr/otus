@@ -1,0 +1,5 @@
+---
+# defaults file for bear_barman_setup
+pg_etc_main: "/etc/postgresql/16/main"
+pg_home_main: "/var/lib/postgresql/16/main"
+pg_bin: "/usr/lib/postgresql/16/bin"

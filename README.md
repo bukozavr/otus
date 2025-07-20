@@ -138,3 +138,18 @@ ansible-playbook run_pve_lab_wh20_ubuntu.yml -i pve.ini --tags init --ask-become
 ```
 ansible-playbook run_pve_lab_wh23_astra.yml -i pve.ini --tags init --ask-become-pas
 ```
+## ДЗ 28. Postgresql - репликация и резервное копирование barman
+
+Серверы с ОС Ubuntu
+- написаны роли Ansible для установки и настройки сервисов
+  * bear_pg_install – установка Postgresql и дополнительных компонентов
+  * bear_pg_replication – копирование конфигурационных файлов на основной (main) и вторичный (db2) серверы.
+  * bear_barman_install – установка barman на сервер бэкапов (backup) и barman-cli на серверы БД
+  * bear_barman_setup - копирование конфигурационных файлов на на сервер бэкапов (backup), создание учетных записей в БД на основном сервере, настройка доступа к Postgresql на вторичном сервере (db2). Также на сервере бэкапов настраиваются задания бэкапа в планировщике и создается резервная копиявсех БД сервера db2.
+
+  https://github.com/bukozavr/otus/blob/master/ansible/run_pve_lab_wh28_ubuntu.yml
+  https://github.com/bukozavr/otus/tree/master/ansible/roles/
+
+```
+ansible-playbook run_pve_lab_wh28_ubuntu.yml -i pve.ini --ask-become-pas
+```

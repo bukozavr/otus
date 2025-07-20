@@ -1,0 +1,25 @@
+[{{ secondary_db_server_name }}]
+#Описание задания
+description = "backup node {{ secondary_db_server_name }} {{ secondary_db_server_ip }}"
+#Команда подключения к хосту node2
+ssh_command = ssh postgres@{{ secondary_db_server_ip }}
+#Команда для подключения к postgres-серверу
+conninfo = host={{ secondary_db_server_ip }} user=barman port=5432 dbname=postgres
+wal_conninfo = host={{ primary_db_server_ip }} user=barman port=5432 dbname=postgres
+primary_conninfo = host={{ primary_db_server_ip }} user=barman port=5432 dbname=postgres
+retention_policy_mode = auto
+retention_policy = RECOVERY WINDOW OF 7 days
+wal_retention_policy = main
+streaming_archiver=on
+#Указание префикса, который будет использоваться как $PATH на хосте node2
+path_prefix = "{{ pg_bin }}/"
+#настройки слота
+create_slot = auto
+slot_name = {{ secondary_db_server_name }}
+#Команда для потоковой передачи от postgres-сервера
+streaming_conninfo = host={{ secondary_db_server_ip }} user=barman
+#Тип выполняемого бекапа
+backup_method = postgres
+archiver = off
+backup_options = concurrent_backup
+primary_checkpoint_timeout = 20

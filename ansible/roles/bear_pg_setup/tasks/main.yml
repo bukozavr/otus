@@ -1,0 +1,31 @@
+---
+# tasks file for bear_pg_setup
+
+
+#- name: Remove database
+#  community.postgresql.postgresql_db:
+#    name: "{{ db_name }}"
+#    state: absent
+
+#- name: Remove user
+#  community.postgresql.postgresql_user:
+#    name: "{{ db_user }}"
+#    state: absent
+
+
+- name: Create user
+#  become_user: postgres
+  community.postgresql.postgresql_user:
+#    login_db: {{ db_name }}
+    name: "{{ db_user }}"
+    password: "{{ db_user_pass }}"
+    encrypted: true
+
+
+- name: Create a new database
+#  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    encoding: UNICODE
+    owner: "{{ db_user }}"
+    comment: Bear DB

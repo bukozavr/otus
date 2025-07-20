@@ -1,0 +1,3 @@
+---
+# vars file for pve_create_vm_name_router
+img_dir: "/srv/images"

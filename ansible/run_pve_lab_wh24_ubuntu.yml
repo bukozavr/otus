@@ -1,0 +1,222 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm 151 ubuntu InetRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 151
+    vm_name: InetRouter
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 152 ubuntu CentralRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 152
+    vm_name: CentralRouter
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 153 ubuntu Office1Router
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 153
+    vm_name: Office1Router
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 154 ubuntu testClient1
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 154
+    vm_name: testClient1
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 155 ubuntu testServer1
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 155
+    vm_name: testServer1
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 156 astra testCient2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 156
+    vm_name: testClient2
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm 157 astra testServer2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 157
+    vm_name: testServer2
+    img_alias: astra
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm_name
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on vm - update OS, prepare server
+  hosts: wh24_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+  tags: [never, init]
+
+- name: work on vm - update OS, prepare server
+  hosts: wh24_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: ipv6_disable
+  tags: [never, init]
+
+
+- name: work on proxmox - create nics on s151 ubuntu - InetRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 151
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "169.254.151.1/24" }
+      - { nic_id: "2", nic_ip: "169.254.151.2/24" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s152 ubuntu - CentralRouter
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 152
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "169.254.152.1/24" }
+      - { nic_id: "2", nic_ip: "169.254.152.2/24" }
+      - { nic_id: "3", nic_ip: "192.168.255.9/30" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s153 ubuntu - Office1Router
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 153
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.255.10/30" }
+      - { nic_id: "2", nic_ip: "192.168.2.65/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s154 ubuntu - testClient1
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 154
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.2.71/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s155 ubuntu - testServer1
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 155
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.2.72/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s156 ubuntu - testClient2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 156
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.2.73/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s157 ubuntu - testServer2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 157
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.2.74/28" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+
+- name: work on vm - network settings
+  hosts: wh24_noble
+  gather_facts: 1
+  become: true
+  roles:
+    - role: ip_forward_enable
+      when: '"Router" in inventory_hostname'
+

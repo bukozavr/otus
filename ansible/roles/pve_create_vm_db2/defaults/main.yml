@@ -1,0 +1,12 @@
+---
+# defaults file for pve_create_vm_name_router
+vm:     222
+vm_name: s222
+vm_last_octet: 222
+vmuser: user
+vmpass: 12345678
+img_alias: noble
+add_disks: 0
+add_disks_size: 1
+dns_server_ip: 192.168.1.1
+dns_suffix: test.local

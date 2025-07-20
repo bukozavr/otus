@@ -1,0 +1,147 @@
+---
+#- name: work on proxmox - update images
+#  hosts: proxmox_root
+#  gather_facts: 0
+#  roles:
+#    - role: pve_load_images
+#      hosts: proxmox_root
+#      tags: [never, init]
+
+- name: work on proxmox - create vm s160 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 160
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s161 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 161
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on proxmox - create vm s162 ubuntu
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 162
+    img_alias: noble
+    add_disks: 0
+    add_disks_size: 0
+  roles:
+    - role: pve_create_vm
+      hosts: proxmox_root
+      tags: [never, init, restore]
+
+- name: work on - vm initial settings
+  hosts: wh22_ubuntu
+  gather_facts: 1
+  become: true
+  roles:
+    - role: pve_update_vm
+    - role: prepare_server
+    - role: ipv6_disable
+  tags: [never, init]
+
+- name: work on proxmox - create nics on s160 ubuntu - Router
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 160
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.0.1/24" }
+      - { nic_id: "2", nic_ip: "192.168.2.1/24" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s161 ubuntu - vpn1
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 161
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.0.10/24" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+- name: work on proxmox - create nics on s162 ubuntu - vpn2
+  hosts: proxmox_root
+  gather_facts: 0
+  vars:
+    vm_last_octet: 162
+    vm_bridge: "vmbr1"
+    nic:
+      - { nic_id: "1", nic_ip: "192.168.2.20/24" }
+  roles:
+    - role: add_nics
+      tags: [never, init, restore]
+
+
+- name: work on vm - rename hosts
+  hosts: wh22_ubuntu
+  gather_facts: 1
+  become: true
+  roles:
+
+    - { role: rename_host, old_hostname: "s160", new_hostname: "router" }
+    - { role: rename_host, old_hostname: "s161", new_hostname: "vpn1" }
+    - { role: rename_host, old_hostname: "s162", new_hostname: "vpn2" }
+  tags: [never, init]
+
+- name: work on vm - network settings
+  hosts: wh22_ubuntu
+  gather_facts: 1
+  become: true
+  tags: [never, init, restore]
+
+  roles:
+
+    - { role: netplan_config, srv: "router", interface_id: "eth0", interface_ip: "192.168.1.160/24" }
+    - { role: netplan_route,  srv: "router", interface_id: "eth0", route_id: "1", network_ip: "default", next_hop: "192.168.1.1" }
+
+    - { role: netplan_config, srv: "router", interface_id: "eth1", interface_ip: "192.168.0.1/24" }
+    - { role: netplan_config, srv: "router", interface_id: "eth2", interface_ip: "192.168.2.1/24" }
+
+    - { role: netplan_config, srv: "vpn1", interface_id: "eth0", interface_ip: "192.168.1.161/24" }
+    - { role: netplan_config, srv: "vpn1", interface_id: "eth1", interface_ip: "192.168.0.10/24" }
+    - { role: netplan_route,  srv: "vpn1", interface_id: "eth1", route_id: "1", network_ip: "default", next_hop: "192.168.0.1" }
+
+    - { role: netplan_config, srv: "vpn2", interface_id: "eth0", interface_ip: "192.168.1.162/24" }
+    - { role: netplan_config, srv: "vpn2", interface_id: "eth1", interface_ip: "192.168.2.20/24" }
+    - { role: netplan_route,  srv: "vpn2", interface_id: "eth1", route_id: "1", network_ip: "default", next_hop: "192.168.2.1" }
+
+    - role: netplan_clear
+
+    - role: ip_forward_enable
+      when: '"router" in inventory_hostname'
+    - { role: iptables_set, srv: "router", interface_id: "eth0" }
+
+    - role: restart_host
+
+- name: work on vm - install openvpn
+  hosts: wh22_ubuntu
+  gather_facts: 1
+  become: true
+  tags: [never, init, restore]
+
+  roles:
+    - role: openvpn_install
+      when: '"vpn" in inventory_hostname'
+
